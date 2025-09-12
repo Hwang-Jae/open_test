@@ -312,6 +312,26 @@
                 const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.task-list');
                 if (!section) return;
 
+
+const tabElement = document.querySelector(`[data-tab="${area}"]`);
+  if (!tabElement) {
+    console.error(`data-tab="${area}" 요소를 찾을 수 없습니다.`);
+    return;
+  }
+
+  const container = tabElement.closest('.bg-white');
+  if (!container) {
+    console.error(`.bg-white 요소를 찾을 수 없습니다.`);
+    return;
+  }
+
+  const section = container.querySelector('.task-list');
+  if (!section) {
+    console.error(`.task-list 요소를 찾을 수 없습니다.`);
+    return;
+  }
+
+
                 section.innerHTML = loadingText;
 
                 const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요. 각 태스크는 20자 이내로 제한하고, JSON 배열 형식으로만 응답합니다. 형식은 `[{'task': '태스크 내용'}]` 입니다.";
