@@ -373,6 +373,12 @@
                 const data = applicationData[tab];
                 if (!data) return;
 
+		const generateButton = document.querySelector('.generate-tasks-btn');
+        		if (generateButton) {
+            		generateButton.addEventListener('click', (e) => {
+                		generateApplicationTasks(e.target.dataset.area);
+            		}
+
                 let html = `
                     <div class="p-4 animate-fade-in">
                         <h3 class="text-2xl font-bold text-blue-600 mb-2">${data.title}</h3>
