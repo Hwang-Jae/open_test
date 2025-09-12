@@ -1,544 +1,552 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVH 코리아 AI 도입 전략 제안</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F8F7F4; }
-        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
-        @media (min-width: 768px) { .chart-container { height: 350px; } }
-        .nav-link { transition: color 0.3s, border-color 0.3s; }
-        .nav-link.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-        .nav-link:hover { color: #3b82f6; }
-        .tab-button.active { background-color: #3b82f6; color: white; }
-        .phase.active { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border-color: #3b82f6; }
-        .risk-item-header.active { background-color: #EBF3FF; }
-        .modal { display: none; }
-        .modal.active { display: flex; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVH 코리아 AI 도입 전략 제안</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Soft Blue -->
+    <!-- Application Structure Plan: The application is designed as a single-page, thematic dashboard rather than a linear report to enhance user engagement and facilitate non-linear exploration. The structure includes: 1) A sticky header for persistent navigation. 2) A 'Vision & Goals' section as the landing point with high-impact KPIs. 3) A 'Core Strategy' section using a card layout for clarity. 4) An interactive 'Application Areas' section with tabs to allow users to dive into specific business units. 5) A visual 'Roadmap' to clearly present the implementation timeline. 6) A 'Budget & ROI' section with interactive charts for financial analysis. 7) A 'Risk Management' section with an accordion for concise presentation. This structure was chosen to guide the user from high-level vision to detailed execution, making complex information digestible and accessible. -->
+    <!-- Visualization & Content Choices: 
+        - Vision KPIs: Goal=Inform -> Method=Dynamic number cards -> Interaction=None -> Justification=Provides immediate, high-level impact -> Library=HTML/CSS.
+        - Core Strategy: Goal=Organize -> Method=Card layout -> Interaction=None -> Justification=Clearly separates strategic pillars for easy comprehension -> Library=HTML/Tailwind.
+        - Application Areas: Goal=Organize/Inform -> Method=Tabbed interface -> Interaction=Click tabs to reveal detailed content -> Justification=Allows users to self-select information relevant to their domain, preventing information overload -> Library=JS/HTML/Tailwind.
+        - Roadmap: Goal=Change/Organize -> Method=Visual timeline diagram -> Interaction=Click on phase to highlight and show details -> Justification=Intuitively represents chronological progression and phase-specific goals -> Library=JS/HTML/Tailwind.
+        - Budget Allocation: Goal=Compare (proportions) -> Method=Donut Chart -> Interaction=Hover for tooltips -> Justification=Effectively shows the distribution of financial resources across different categories -> Library=Chart.js (Canvas).
+        - Expected ROI: Goal=Compare/Change -> Method=Bar Chart -> Interaction=Hover for tooltips -> Justification=Clearly visualizes the financial benefits (cost savings vs. revenue growth) over time -> Library=Chart.js (Canvas).
+        - Risk Management: Goal=Inform -> Method=Accordion component -> Interaction=Click to expand/collapse -> Justification=Presents risks and mitigations in a compact, organized manner without cluttering the UI -> Library=JS/HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #F8F7F4; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+        .nav-link:hover { color: #3b82f6; }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .phase.active { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border-color: #3b82f6; }
+        .risk-item-header.active { background-color: #EBF3FF; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
 </head>
 <body class="text-gray-800">
 
-    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl md:text-2xl font-bold text-gray-900">NVH Korea AI Transformation</h1>
-            <div class="hidden md:flex space-x-8">
-                <a href="#vision" class="nav-link pb-1 border-b-2 border-transparent">비전 & 목표</a>
-                <a href="#strategy" class="nav-link pb-1 border-b-2 border-transparent">핵심 전략</a>
-                <a href="#applications" class="nav-link pb-1 border-b-2 border-transparent">활용 분야</a>
-                <a href="#roadmap" class="nav-link pb-1 border-b-2 border-transparent">로드맵</a>
-                <a href="#roi" class="nav-link pb-1 border-b-2 border-transparent">예산 & ROI</a>
-                <a href="#risks" class="nav-link pb-1 border-b-2 border-transparent">리스크 관리</a>
-            </div>
-             <div class="md:hidden">
-                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
-                    <option value="#vision">비전 & 목표</option>
-                    <option value="#strategy">핵심 전략</option>
-                    <option value="#applications">활용 분야</option>
-                    <option value="#roadmap">로드맵</option>
-                    <option value="#roi">예산 & ROI</option>
-                    <option value="#risks">리스크 관리</option>
-                </select>
-            </div>
-        </nav>
-    </header>
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-900">NVH Korea AI Transformation</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#vision" class="nav-link pb-1 border-b-2 border-transparent">비전 & 목표</a>
+                <a href="#strategy" class="nav-link pb-1 border-b-2 border-transparent">핵심 전략</a>
+                <a href="#applications" class="nav-link pb-1 border-b-2 border-transparent">활용 분야</a>
+                <a href="#roadmap" class="nav-link pb-1 border-b-2 border-transparent">로드맵</a>
+                <a href="#roi" class="nav-link pb-1 border-b-2 border-transparent">예산 & ROI</a>
+                <a href="#risks" class="nav-link pb-1 border-b-2 border-transparent">리스크 관리</a>
+            </div>
+             <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
+                    <option value="#vision">비전 & 목표</option>
+                    <option value="#strategy">핵심 전략</option>
+                    <option value="#applications">활용 분야</option>
+                    <option value="#roadmap">로드맵</option>
+                    <option value="#roi">예산 & ROI</option>
+                    <option value="#risks">리스크 관리</option>
+                </select>
+            </div>
+        </nav>
+    </header>
 
-    <main class="container mx-auto px-6 py-12">
+    <main class="container mx-auto px-6 py-12">
 
-        <section id="vision" class="text-center min-h-[80vh] flex flex-col justify-center items-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">AI 기반 지능형 기업으로의 전환</h2>
-            <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl">데이터와 인공지능을 통해 NVH 기술의 초격차를 확보하고, 지속 가능한 성장을 이끌어갑니다.</p>
-            <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
-                    <h3 class="text-lg font-semibold text-gray-500 mb-2">생산 효율성 향상</h3>
-                    <p class="text-4xl font-bold text-blue-600">+20%</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
-                    <h3 class="text-lg font-semibold text-gray-500 mb-2">제품 불량률 감소</h3>
-                    <p class="text-4xl font-bold text-blue-600">-50%</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
-                    <h3 class="text-lg font-semibold text-gray-500 mb-2">신제품 개발 기간 단축</h3>
-                    <p class="text-4xl font-bold text-blue-600">-30%</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
-                    <h3 class="text-lg font-semibold text-gray-500 mb-2">에너지 비용 절감</h3>
-                    <p class="text-4xl font-bold text-blue-600">-15%</p>
-                </div>
-            </div>
-        </section>
+        <section id="vision" class="text-center min-h-[80vh] flex flex-col justify-center items-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">AI 기반 지능형 기업으로의 전환</h2>
+            <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl">데이터와 인공지능을 통해 NVH 기술의 초격차를 확보하고, 지속 가능한 성장을 이끌어갑니다.</p>
+            <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                    <h3 class="text-lg font-semibold text-gray-500 mb-2">생산 효율성 향상</h3>
+                    <p class="text-4xl font-bold text-blue-600">+20%</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                    <h3 class="text-lg font-semibold text-gray-500 mb-2">제품 불량률 감소</h3>
+                    <p class="text-4xl font-bold text-blue-600">-50%</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                    <h3 class="text-lg font-semibold text-gray-500 mb-2">신제품 개발 기간 단축</h3>
+                    <p class="text-4xl font-bold text-blue-600">-30%</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                    <h3 class="text-lg font-semibold text-gray-500 mb-2">에너지 비용 절감</h3>
+                    <p class="text-4xl font-bold text-blue-600">-15%</p>
+                </div>
+            </div>
+        </section>
 
-        <section id="strategy" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold">핵심 추진 전략</h2>
-                <p class="text-lg text-gray-600 mt-4">성공적인 AI 도입을 위한 3대 핵심 전략을 추진합니다.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8 text-center">
-                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
-                     <div class="text-4xl text-blue-500 mb-4">📈</div>
-                    <h3 class="text-xl font-bold mb-3">데이터 기반 의사결정</h3>
-                    <p class="text-gray-600">전사적 데이터를 통합하고 분석하여, 모든 의사결정을 데이터에 근거하여 신속하고 정확하게 내리는 문화를 정착시킵니다.</p>
-                    <button data-strategy="데이터 기반 의사결정" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
-                </div>
-                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
-                    <div class="text-4xl text-blue-500 mb-4">⚙️</div>
-                    <h3 class="text-xl font-bold mb-3">핵심 공정 지능화</h3>
-                    <p class="text-gray-600">생산, 품질, R&D 등 핵심 비즈니스 프로세스에 AI를 적용하여 자동화 및 최적화를 달성하고 생산성을 극대화합니다.</p>
-                    <button data-strategy="핵심 공정 지능화" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
-                </div>
-                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
-                    <div class="text-4xl text-blue-500 mb-4">👩‍💻</div>
-                    <h3 class="text-xl font-bold mb-3">AI 전문 인력 양성</h3>
-                    <p class="text-gray-600">체계적인 교육 및 프로젝트 참여를 통해 AI 기술을 이해하고 현업에 적용할 수 있는 내부 전문가를 적극적으로 양성합니다.</p>
-                    <button data-strategy="AI 전문 인력 양성" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
-                </div>
-            </div>
-        </section>
+        <section id="strategy" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">핵심 추진 전략</h2>
+                <p class="text-lg text-gray-600 mt-4">성공적인 AI 도입을 위한 3대 핵심 전략을 추진합니다.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+                     <div class="text-4xl text-blue-500 mb-4">📈</div>
+                    <h3 class="text-xl font-bold mb-3">데이터 기반 의사결정</h3>
+                    <p class="text-gray-600">전사적 데이터를 통합하고 분석하여, 모든 의사결정을 데이터에 근거하여 신속하고 정확하게 내리는 문화를 정착시킵니다.</p>
+                    <button data-strategy="데이터 기반 의사결정" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+                    <div class="text-4xl text-blue-500 mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold mb-3">핵심 공정 지능화</h3>
+                    <p class="text-gray-600">생산, 품질, R&D 등 핵심 비즈니스 프로세스에 AI를 적용하여 자동화 및 최적화를 달성하고 생산성을 극대화합니다.</p>
+                    <button data-strategy="핵심 공정 지능화" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+                    <div class="text-4xl text-blue-500 mb-4">👩‍💻</div>
+                    <h3 class="text-xl font-bold mb-3">AI 전문 인력 양성</h3>
+                    <p class="text-gray-600">체계적인 교육 및 프로젝트 참여를 통해 AI 기술을 이해하고 현업에 적용할 수 있는 내부 전문가를 적극적으로 양성합니다.</p>
+                    <button data-strategy="AI 전문 인력 양성" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
+                </div>
+            </div>
+        </section>
 
-        <section id="applications" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold">AI 도입 활용 분야</h2>
-                <p class="text-lg text-gray-600 mt-4">비즈니스 가치 창출이 가장 클 것으로 기대되는 4대 핵심 분야에 집중합니다.</p>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg p-4 md:p-8">
-                <div class="flex flex-wrap justify-center border-b border-gray-200 mb-6">
-                    <button data-tab="rd" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg active">연구개발</button>
-                    <button data-tab="manufacturing" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">생산공정</button>
-                    <button data-tab="quality" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">품질관리</button>
-                    <button data-tab="scm" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">공급망관리</button>
-            </div>
-                <div id="application-content" class="min-h-[300px]">
-                </div>
-            </div>
-        </section>
+        <section id="applications" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">AI 도입 활용 분야</h2>
+                <p class="text-lg text-gray-600 mt-4">비즈니스 가치 창출이 가장 클 것으로 기대되는 4대 핵심 분야에 집중합니다.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-4 md:p-8">
+                <div class="flex flex-wrap justify-center border-b border-gray-200 mb-6">
+                    <button data-tab="rd" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg active">연구개발</button>
+                    <button data-tab="manufacturing" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">생산공정</button>
+                    <button data-tab="quality" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">품질관리</button>
+                    <button data-tab="scm" class="tab-button py-3 px-6 font-semibold text-gray-600 rounded-t-lg">공급망관리</button>
+                </div>
+                <div id="application-content" class="min-h-[300px]">
+                </div>
+            </div>
+        </section>
 
-        <section id="roadmap" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold">추진 로드맵</h2>
-                <p class="text-lg text-gray-600 mt-4">단계별 목표를 설정하여 점진적이고 체계적으로 AI 도입을 추진합니다.</p>
-            </div>
-            <div class="relative">
-                <div class="hidden md:block border-l-4 border-blue-200 absolute h-full top-0 left-1/2 -ml-0.5"></div>
-                <div data-phase="1" class="phase mb-12 md:mb-8 flex md:justify-end md:w-1/2 md:pr-8 transition duration-300 ease-in-out cursor-pointer">
-                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
-                        <p class="text-sm font-semibold text-blue-600">Phase 1 (1년차)</p>
-                        <h3 class="text-xl font-bold">기반 구축 단계</h3>
-                        <p class="text-gray-600 mt-2">AI 인프라 도입 및 데이터 플랫폼 구축, 핵심 영역 파일럿 프로젝트 수행</p>
-                    </div>
-                </div>
-                <div data-phase="2" class="phase mb-12 md:mb-8 flex md:justify-start md:w-1/2 md:ml-auto md:pl-8 transition duration-300 ease-in-out cursor-pointer">
-                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
-                        <p class="text-sm font-semibold text-blue-600">Phase 2 (2~3년차)</p>
-                        <h3 class="text-xl font-bold">확산 적용 단계</h3>
-                        <p class="text-gray-600 mt-2">파일럿 성공 모델 전사 확산 및 핵심 공정 AI 적용 확대, AI 거버넌스 수립</p>
-                    </div>
-                </div>
-                <div data-phase="3" class="phase mb-12 md:mb-8 flex md:justify-end md:w-1/2 md:pr-8 transition duration-300 ease-in-out cursor-pointer">
-                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
-                        <p class="text-sm font-semibold text-blue-600">Phase 3 (4~5년차)</p>
-                        <h3 class="text-xl font-bold">고도화 단계</h3>
-                        <p class="text-gray-600 mt-2">전사적 AI 내재화 및 문화 정착, AI 기반 신규 비즈니스 모델 창출</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section id="roadmap" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">추진 로드맵</h2>
+                <p class="text-lg text-gray-600 mt-4">단계별 목표를 설정하여 점진적이고 체계적으로 AI 도입을 추진합니다.</p>
+            </div>
+            <div class="relative">
+                <div class="hidden md:block border-l-4 border-blue-200 absolute h-full top-0 left-1/2 -ml-0.5"></div>
+                <div data-phase="1" class="phase mb-12 md:mb-8 flex md:justify-end md:w-1/2 md:pr-8 transition duration-300 ease-in-out cursor-pointer">
+                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
+                        <p class="text-sm font-semibold text-blue-600">Phase 1 (1년차)</p>
+                        <h3 class="text-xl font-bold">기반 구축 단계</h3>
+                        <p class="text-gray-600 mt-2">AI 인프라 도입 및 데이터 플랫폼 구축, 핵심 영역 파일럿 프로젝트 수행</p>
+                    </div>
+                </div>
+                <div data-phase="2" class="phase mb-12 md:mb-8 flex md:justify-start md:w-1/2 md:ml-auto md:pl-8 transition duration-300 ease-in-out cursor-pointer">
+                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
+                        <p class="text-sm font-semibold text-blue-600">Phase 2 (2~3년차)</p>
+                        <h3 class="text-xl font-bold">확산 적용 단계</h3>
+                        <p class="text-gray-600 mt-2">파일럿 성공 모델 전사 확산 및 핵심 공정 AI 적용 확대, AI 거버넌스 수립</p>
+                    </div>
+                </div>
+                <div data-phase="3" class="phase mb-12 md:mb-8 flex md:justify-end md:w-1/2 md:pr-8 transition duration-300 ease-in-out cursor-pointer">
+                    <div class="w-full md:w-auto bg-white p-6 rounded-xl shadow-lg border-2 border-transparent">
+                        <p class="text-sm font-semibold text-blue-600">Phase 3 (4~5년차)</p>
+                        <h3 class="text-xl font-bold">고도화 단계</h3>
+                        <p class="text-gray-600 mt-2">전사적 AI 내재화 및 문화 정착, AI 기반 신규 비즈니스 모델 창출</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <section id="roi" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold">예산 및 기대효과 (ROI)</h2>
-                <p class="text-lg text-gray-600 mt-4">전략적 투자를 통해 가시적인 재무 성과를 창출합니다.</p>
-            </div>
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
-                    <h3 class="text-xl font-bold text-center mb-4">초기 5개년 예산 배분</h3>
-                    <div class="chart-container">
-                        <canvas id="budgetChart"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
-                    <h3 class="text-xl font-bold text-center mb-4">연도별 기대효과 (단위: 억원)</h3>
-                    <div class="chart-container">
-                        <canvas id="roiChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section id="roi" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">예산 및 기대효과 (ROI)</h2>
+                <p class="text-lg text-gray-600 mt-4">전략적 투자를 통해 가시적인 재무 성과를 창출합니다.</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4">초기 5개년 예산 배분</h3>
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4">연도별 기대효과 (단위: 억원)</h3>
+                    <div class="chart-container">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <section id="risks" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold">리스크 관리 방안</h2>
-                <p class="text-lg text-gray-600 mt-4">예상되는 리스크를 사전에 파악하고 체계적인 대응 전략을 수립합니다.</p>
-            </div>
-            <div class="max-w-3xl mx-auto space-y-4">
-                <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
-                        <h3 class="font-semibold text-lg">데이터 보안 및 품질</h3>
-                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
-                    </div>
-                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
-                        <p class="p-5 border-t border-gray-200 text-gray-600">강화된 데이터 보안 정책 수립 및 접근 제어 시스템 구축. 데이터 거버넌스 체계를 확립하여 데이터 정합성과 품질을 지속적으로 관리.</p>
-                    </div>
-                </div>
-                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
-                        <h3 class="font-semibold text-lg">기술 종속성 및 비용</h3>
-                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
-                    </div>
-                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
-                        <p class="p-5 border-t border-gray-200 text-gray-600">오픈소스 기술을 적극 활용하여 특정 벤더에 대한 종속성을 최소화. 클라우드 기반의 유연한 인프라를 도입하여 초기 투자 비용을 절감하고 확장성을 확보.</p>
-                    </div>
-                </div>
-                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
-                        <h3 class="font-semibold text-lg">조직 문화 저항</h3>
-                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
-                    </div>
-                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
-                        <p class="p-5 border-t border-gray-200 text-gray-600">전사적 AI 리터러시 교육 실시 및 변화관리 프로그램 운영. AI 도입 성공 사례를 적극 공유하고, 명확한 비전 제시를 통해 구성원의 참여와 공감대를 형성.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-                <div id="aiModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-[100] items-center justify-center p-4">
-            <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-full overflow-y-auto relative">
-                <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold leading-none">&times;</button>
-                <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
-                <div id="modalContent" class="text-gray-700 leading-relaxed space-y-4"></div>
-            </div>
-        </div>
-    </main>
-    
-    <footer class="bg-white border-t mt-12">
-        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
-            <p>&copy; 2025 NVH Korea. AI Transformation Initiative.</p>
-        </div>
-    </footer>
+        <section id="risks" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold">리스크 관리 방안</h2>
+                <p class="text-lg text-gray-600 mt-4">예상되는 리스크를 사전에 파악하고 체계적인 대응 전략을 수립합니다.</p>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
+                        <h3 class="font-semibold text-lg">데이터 보안 및 품질</h3>
+                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
+                    </div>
+                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <p class="p-5 border-t border-gray-200 text-gray-600">강화된 데이터 보안 정책 수립 및 접근 제어 시스템 구축. 데이터 거버넌스 체계를 확립하여 데이터 정합성과 품질을 지속적으로 관리.</p>
+                    </div>
+                </div>
+                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
+                        <h3 class="font-semibold text-lg">기술 종속성 및 비용</h3>
+                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
+                    </div>
+                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <p class="p-5 border-t border-gray-200 text-gray-600">오픈소스 기술을 적극 활용하여 특정 벤더에 대한 종속성을 최소화. 클라우드 기반의 유연한 인프라를 도입하여 초기 투자 비용을 절감하고 확장성을 확보.</p>
+                    </div>
+                </div>
+                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
+                        <h3 class="font-semibold text-lg">조직 문화 저항</h3>
+                        <span class="text-2xl text-gray-500 transform transition-transform">+</span>
+                    </div>
+                    <div class="risk-item-body max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <p class="p-5 border-t border-gray-200 text-gray-600">전사적 AI 리터러시 교육 실시 및 변화관리 프로그램 운영. AI 도입 성공 사례를 적극 공유하고, 명확한 비전 제시를 통해 구성원의 참여와 공감대를 형성.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Modal for AI-generated content -->
+        <div id="aiModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-[100] items-center justify-center p-4">
+            <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-full overflow-y-auto relative">
+                <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold leading-none">&times;</button>
+                <h3 id="modalTitle" class="text-2xl font-bold mb-4"></h3>
+                <div id="modalContent" class="text-gray-700 leading-relaxed space-y-4"></div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-white border-t mt-12">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 NVH Korea. AI Transformation Initiative.</p>
+        </div>
+    </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const applicationData = {
-                rd: {
-                    title: '연구개발 (R&D) 혁신',
-                    description: 'AI 시뮬레이션과 데이터 분석을 통해 신제품 개발을 가속화하고, 시장을 선도하는 혁신적인 NVH 솔루션을 개발합니다.',
-                    items: [
-                        { name: 'AI 기반 소음/진동 예측', detail: '차량 설계 초기 단계에서 AI 모델을 활용하여 소음 및 진동 성능을 정확하게 예측함으로써, 시제품 제작 및 테스트 횟수를 획기적으로 줄입니다.' },
-                        { name: '신소재 물성 예측 모델', detail: '수많은 소재 데이터를 학습한 AI가 최적의 물성을 가진 신소재 조합을 추천하여, 고성능/경량화 소재 개발 기간을 단축합니다.' },
-                        { name: '설계 최적화 자동화', detail: 'AI가 수천 개의 설계 변수를 고려하여 NVH 성능을 극대화하는 최적의 설계안을 자동으로 탐색하고 제안합니다.' }
-                    ]
-                },
-                manufacturing: {
-                    title: '지능형 생산 공정',
-                    description: '실시간 데이터 분석과 AI 예측 모델을 통해 생산 공정을 최적화하고, 설비 가동률을 극대화하여 스마트 팩토리를 구현합니다.',
-                    items: [
-                        { name: '설비 예지보전 시스템', detail: '주요 생산 설비의 센서 데이터를 실시간으로 분석하여 고장 징후를 사전에 예측하고 알려주어, 비계획적 다운타임을 최소화합니다.' },
-                        { name: 'AI 비전 검사', detail: '고해상도 카메라와 AI 비전 기술을 통해 미세한 제품 결함까지 자동으로 검출하여, 검사 정확도와 속도를 동시에 향상시킵니다.' },
-                        { name: '생산 공정 최적화', detail: '생산 라인의 데이터를 종합적으로 분석하여 병목 현상을 식별하고, 에너지 효율을 극대화하는 최적의 공정 조건을 도출합니다.' }
-                    ]
-                },
-                quality: {
-                    title: '데이터 기반 품질 관리',
-                    description: '공정 데이터와 검사 데이터의 상관관계 분석을 통해 불량의 근본 원인을 규명하고, 제로 디펙트(Zero Defect)를 목표로 합니다.',
-                    items: [
-                        { name: '불량 원인 분석 AI', detail: '과거 불량 데이터와 수십 가지 공정 변수를 분석하여, 특정 불량 유형의 핵심 원인 인자를 자동으로 식별하고 개선 방안을 제시합니다.' },
-                        { name: '최종 품질 검사 자동화', detail: '제품의 최종 성능 테스트(소음, 진동 등) 데이터를 AI가 분석하여 합격/불합격 여부를 자동으로 판정하고, 일관성 있는 품질을 보증합니다.' },
-                        { name: '실시간 품질 모니터링', detail: '생산 공정 전반의 품질 데이터를 실시간으로 모니터링하고 이상 징후 발생 시 즉시 경고하여, 불량 확산을 사전에 방지합니다.' }
-                    ]
-                },
-                scm: {
-                    title: '공급망 관리(SCM) 최적화',
-                    description: '정확한 수요 예측과 재고/물류 최적화를 통해 공급망의 불확실성에 대응하고, 비용 효율성과 고객 만족도를 동시에 높입니다.',
-                    items: [
-                        { name: 'AI 수요 예측 및 재고 최적화', detail: '과거 판매 데이터, 시장 트렌드, 계절적 요인 등을 종합 분석하여 고객사 수요를 정확하게 예측하고, 이를 기반으로 최적의 안전 재고 수준을 유지합니다.' },
-                        { name: '물류 네트워크 최적화', detail: '운송 거리, 비용, 시간 등 다양한 변수를 고려하여 가장 효율적인 부품 조달 및 제품 운송 경로와 방식을 결정합니다.' },
-                        { name: '공급망 리스크 관리', detail: '글로벌 공급망 데이터를 분석하여 잠재적 리스크(예: 특정 지역의 생산 차질)를 사전에 식별하고, 비상 대응 계획을 수립합니다.' }
-                    ]
-                }
-            };
-            
-            const aiModal = document.getElementById('aiModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
-            const closeModalBtn = document.getElementById('closeModal');
-            const loadingText = '<p>생성 중... 잠시만 기다려 주세요.</p>';
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const applicationData = {
+                rd: {
+                    title: '연구개발 (R&D) 혁신',
+                    description: 'AI 시뮬레이션과 데이터 분석을 통해 신제품 개발을 가속화하고, 시장을 선도하는 혁신적인 NVH 솔루션을 개발합니다.',
+                    items: [
+                        { name: 'AI 기반 소음/진동 예측', detail: '차량 설계 초기 단계에서 AI 모델을 활용하여 소음 및 진동 성능을 정확하게 예측함으로써, 시제품 제작 및 테스트 횟수를 획기적으로 줄입니다.' },
+                        { name: '신소재 물성 예측 모델', detail: '수많은 소재 데이터를 학습한 AI가 최적의 물성을 가진 신소재 조합을 추천하여, 고성능/경량화 소재 개발 기간을 단축합니다.' },
+                        { name: '설계 최적화 자동화', detail: 'AI가 수천 개의 설계 변수를 고려하여 NVH 성능을 극대화하는 최적의 설계안을 자동으로 탐색하고 제안합니다.' }
+                    ]
+                },
+                manufacturing: {
+                    title: '지능형 생산 공정',
+                    description: '실시간 데이터 분석과 AI 예측 모델을 통해 생산 공정을 최적화하고, 설비 가동률을 극대화하여 스마트 팩토리를 구현합니다.',
+                    items: [
+                        { name: '설비 예지보전 시스템', detail: '주요 생산 설비의 센서 데이터를 실시간으로 분석하여 고장 징후를 사전에 예측하고 알려주어, 비계획적 다운타임을 최소화합니다.' },
+                        { name: 'AI 비전 검사', detail: '고해상도 카메라와 AI 비전 기술을 통해 미세한 제품 결함까지 자동으로 검출하여, 검사 정확도와 속도를 동시에 향상시킵니다.' },
+                        { name: '생산 공정 최적화', detail: '생산 라인의 데이터를 종합적으로 분석하여 병목 현상을 식별하고, 에너지 효율을 극대화하는 최적의 공정 조건을 도출합니다.' }
+                    ]
+                },
+                quality: {
+                    title: '데이터 기반 품질 관리',
+                    description: '공정 데이터와 검사 데이터의 상관관계 분석을 통해 불량의 근본 원인을 규명하고, 제로 디펙트(Zero Defect)를 목표로 합니다.',
+                    items: [
+                        { name: '불량 원인 분석 AI', detail: '과거 불량 데이터와 수십 가지 공정 변수를 분석하여, 특정 불량 유형의 핵심 원인 인자를 자동으로 식별하고 개선 방안을 제시합니다.' },
+                        { name: '최종 품질 검사 자동화', detail: '제품의 최종 성능 테스트(소음, 진동 등) 데이터를 AI가 분석하여 합격/불합격 여부를 자동으로 판정하고, 일관성 있는 품질을 보증합니다.' },
+                        { name: '실시간 품질 모니터링', detail: '생산 공정 전반의 품질 데이터를 실시간으로 모니터링하고 이상 징후 발생 시 즉시 경고하여, 불량 확산을 사전에 방지합니다.' }
+                    ]
+                },
+                scm: {
+                    title: '공급망 관리(SCM) 최적화',
+                    description: '정확한 수요 예측과 재고/물류 최적화를 통해 공급망의 불확실성에 대응하고, 비용 효율성과 고객 만족도를 동시에 높입니다.',
+                    items: [
+                        { name: 'AI 수요 예측 및 재고 최적화', detail: '과거 판매 데이터, 시장 트렌드, 계절적 요인 등을 종합 분석하여 고객사 수요를 정확하게 예측하고, 이를 기반으로 최적의 안전 재고 수준을 유지합니다.' },
+                        { name: '물류 네트워크 최적화', detail: '운송 거리, 비용, 시간 등 다양한 변수를 고려하여 가장 효율적인 부품 조달 및 제품 운송 경로와 방식을 결정합니다.' },
+                        { name: '공급망 리스크 관리', detail: '글로벌 공급망 데이터를 분석하여 잠재적 리스크(예: 특정 지역의 생산 차질)를 사전에 식별하고, 비상 대응 계획을 수립합니다.' }
+                    ]
+                }
+            };
+            
+            const aiModal = document.getElementById('aiModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            const closeModalBtn = document.getElementById('closeModal');
+            const loadingText = '<p>생성 중... 잠시만 기다려 주세요.</p>';
 
-            async function generateDetailedPlan(strategy) {
-                modalTitle.textContent = `"${strategy}" 세부 실행 방안`;
-                modalContent.innerHTML = loadingText;
-                aiModal.classList.add('active');
+            async function generateDetailedPlan(strategy) {
+                modalTitle.textContent = `"${strategy}" 세부 실행 방안`;
+                modalContent.innerHTML = loadingText;
+                aiModal.classList.add('active');
 
-                const systemPrompt = "당신은 세계적인 기업의 AI 도입 전략을 기획하는 컨설턴트입니다. 사용자 요청에 따라 구체적이고 실현 가능한 AI 도입 실행 방안을 명확하게 제시하세요. 문체는 격식 있고 전문적인 톤을 유지하되, 너무 딱딱하지 않게 작성합니다. 길이는 500자 이내로 제한합니다. 출력은 오직 텍스트로만 구성됩니다.";
-                const userQuery = `NVH 코리아의 AI 도입 전략 중 "${strategy}"에 대한 500자 이내의 구체적인 세부 실행 방안을 제시해줘. 실무에 바로 적용 가능한 현실적인 내용을 포함해.`;
-                const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const systemPrompt = "당신은 세계적인 기업의 AI 도입 전략을 기획하는 컨설턴트입니다. 사용자 요청에 따라 구체적이고 실현 가능한 AI 도입 실행 방안을 명확하게 제시하세요. 문체는 격식 있고 전문적인 톤을 유지하되, 너무 딱딱하지 않게 작성합니다. 길이는 500자 이내로 제한합니다. 출력은 오직 텍스트로만 구성됩니다.";
+                const userQuery = `NVH 코리아의 AI 도입 전략 중 "${strategy}"에 대한 500자 이내의 구체적인 세부 실행 방안을 제시해줘. 실무에 바로 적용 가능한 현실적인 내용을 포함해.`;
+                const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                };
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
 
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-                    if (!response.ok) {
-                        throw new Error(`API response was not ok: ${response.status}`);
-                    }
+                    if (!response.ok) {
+                        throw new Error(`API response was not ok: ${response.status}`);
+                    }
 
-                    const result = await response.json();
-                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        modalContent.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
-                    } else {
-                        modalContent.innerHTML = '<p>내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
-                    }
-                } catch (error) {
-                    console.error('API 호출 중 오류 발생:', error);
-                    modalContent.innerHTML = '<p>오류가 발생했습니다. 다시 시도해 주세요.</p>';
-                }
-            }
-            
-            async function generateApplicationTasks(area) {
-                const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.task-list');
-                if (!section) return;
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        modalContent.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
+                    } else {
+                        modalContent.innerHTML = '<p>내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
+                    }
+                } catch (error) {
+                    console.error('API 호출 중 오류 발생:', error);
+                    modalContent.innerHTML = '<p>오류가 발생했습니다. 다시 시도해 주세요.</p>';
+                }
+            }
+            
+            async function generateApplicationTasks(area) {
+                const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.task-list');
+                if (!section) return;
 
-                section.innerHTML = loadingText;
+                section.innerHTML = loadingText;
 
-                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요. 각 태스크는 20자 이내로 제한하고, JSON 배열 형식으로만 응답합니다. 형식은 `[{'task': '태스크 내용'}]` 입니다.";
-                const userQuery = `NVH 코리아의 AI 도입 활용 분야 중 "${applicationData[area].title}"에 대한 구체적인 세부 실행 Task 3가지를 리스트업해줘.`;
-                const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요. 각 태스크는 20자 이내로 제한하고, JSON 배열 형식으로만 응답합니다. 형식은 `[{'task': '태스크 내용'}]` 입니다.";
+                const userQuery = `NVH 코리아의 AI 도입 활용 분야 중 "${applicationData[area].title}"에 대한 구체적인 세부 실행 Task 3가지를 리스트업해줘.`;
+                const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "task": { "type": "STRING" }
-                                }
-                            }
-                        }
-                    },
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
-                };
-                
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "task": { "type": "STRING" }
+                                }
+                            }
+                        }
+                    },
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-                    const result = await response.json();
-                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-                    if (text) {
-                        const parsedJson = JSON.parse(text);
-                        if (parsedJson && Array.isArray(parsedJson)) {
-                             const tasksHtml = parsedJson.map((t, index) => `<li class="font-medium">${index + 1}. ${t.task}</li>`).join('');
-                             section.innerHTML = `<ul class="space-y-1">${tasksHtml}</ul>`;
-                        } else {
-                            throw new Error('Invalid JSON format received.');
-                        }
-                    } else {
-                        throw new Error('No content received from API.');
-                    }
-                } catch (error) {
-                    console.error('API 호출 중 오류 발생:', error);
-                    section.innerHTML = '<p class="text-red-500">내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
-                }
-            }
+                    if (text) {
+                        const parsedJson = JSON.parse(text);
+                        if (parsedJson && Array.isArray(parsedJson)) {
+                             const tasksHtml = parsedJson.map((t, index) => `<li class="font-medium">${index + 1}. ${t.task}</li>`).join('');
+                             section.innerHTML = `<ul class="space-y-1">${tasksHtml}</ul>`;
+                        } else {
+                            throw new Error('Invalid JSON format received.');
+                        }
+                    } else {
+                        throw new Error('No content received from API.');
+                    }
+                } catch (error) {
+                    console.error('API 호출 중 오류 발생:', error);
+                    section.innerHTML = '<p class="text-red-500">내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
+                }
+            }
 
 
-            const contentEl = document.getElementById('application-content');
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const strategyButtons = document.querySelectorAll('[data-strategy]');
-            
-            // 이 함수를 호출할 때마다 이벤트 리스너를 동적으로 다시 연결하도록 수정
-            function updateApplicationContent(tab) {
-                const data = applicationData[tab];
-                if (!data) return;
+            const contentEl = document.getElementById('application-content');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const strategyButtons = document.querySelectorAll('[data-strategy]');
 
-                let html = `
-                    <div class="p-4 animate-fade-in">
-                        <h3 class="text-2xl font-bold text-blue-600 mb-2">${data.title}</h3>
-                        <p class="text-gray-600 mb-6">${data.description}</p>
-                        <div class="space-y-4">
-                            ${data.items.map(item => `
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-semibold">${item.name}</h4>
-                                    <p class="text-sm text-gray-500 mt-1">${item.detail}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="mt-8 text-center">
-                            <h4 class="font-bold text-gray-700 mb-2">✨ 세부 계획 (Gemini AI 생성)</h4>
-                            <button data-area="${tab}" class="generate-tasks-btn px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 계획 생성</button>
-                            <div class="task-list mt-4 text-gray-600 min-h-[50px]"></div>
-                        </div>
-                    </div>
-                `;
-                contentEl.innerHTML = html;
+            function updateApplicationContent(tab) {
+                const data = applicationData[tab];
+                if (!data) return;
 
-                tabButtons.forEach(button => {
-                    button.classList.toggle('active', button.dataset.tab === tab);
-                });
+                let html = `
+                    <div class="p-4 animate-fade-in">
+                        <h3 class="text-2xl font-bold text-blue-600 mb-2">${data.title}</h3>
+                        <p class="text-gray-600 mb-6">${data.description}</p>
+                        <div class="space-y-4">
+                            ${data.items.map(item => `
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold">${item.name}</h4>
+                                    <p class="text-sm text-gray-500 mt-1">${item.detail}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-8 text-center">
+                            <h4 class="font-bold text-gray-700 mb-2">✨ 세부 계획 (Gemini AI 생성)</h4>
+                            <button data-area="${tab}" class="generate-tasks-btn px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 계획 생성</button>
+                            <div class="task-list mt-4 text-gray-600 min-h-[50px]"></div>
+                        </div>
+                    </div>
+                `;
+                contentEl.innerHTML = html;
 
-                // 여기를 수정합니다.
-                const generateButton = document.querySelector('.generate-tasks-btn');
-                if (generateButton) {
-                    generateButton.addEventListener('click', (e) => {
-                        generateApplicationTasks(e.target.dataset.area);
-                    });
-                }
-            }
+                tabButtons.forEach(button => {
+                    button.classList.toggle('active', button.dataset.tab === tab);
+                });
+                
+                document.querySelector('.generate-tasks-btn').addEventListener('click', (e) => {
+                    generateApplicationTasks(e.target.dataset.area);
+                });
+            }
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    updateApplicationContent(button.dataset.tab);
-                });
-            });
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    updateApplicationContent(button.dataset.tab);
+                });
+            });
 
-            strategyButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    generateDetailedPlan(e.target.dataset.strategy);
-                });
-            });
+            strategyButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    generateDetailedPlan(e.target.dataset.strategy);
+                });
+            });
 
-            closeModalBtn.addEventListener('click', () => {
-                aiModal.classList.remove('active');
-            });
+            closeModalBtn.addEventListener('click', () => {
+                aiModal.classList.remove('active');
+            });
 
-            aiModal.addEventListener('click', (e) => {
-                if (e.target === aiModal) {
-                    aiModal.classList.remove('active');
-                }
-            });
+            aiModal.addEventListener('click', (e) => {
+                if (e.target === aiModal) {
+                    aiModal.classList.remove('active');
+                }
+            });
 
-            updateApplicationContent('rd');
-            
-            const budgetChartCtx = document.getElementById('budgetChart').getContext('2d');
-            new Chart(budgetChartCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['R&D/솔루션 도입', '인프라 구축', '인력 양성', '운영/기타'],
-                    datasets: [{
-                        data: [40, 35, 15, 10],
-                        backgroundColor: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
-                        borderColor: '#F8F7F4',
-                        borderWidth: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' },
-                        tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
-                    }
-                }
-            });
+            updateApplicationContent('rd');
+            
+            const budgetChartCtx = document.getElementById('budgetChart').getContext('2d');
+            new Chart(budgetChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['R&D/솔루션 도입', '인프라 구축', '인력 양성', '운영/기타'],
+                    datasets: [{
+                        data: [40, 35, 15, 10],
+                        backgroundColor: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
+                        borderColor: '#F8F7F4',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
+                    }
+                }
+            });
 
-            const roiChartCtx = document.getElementById('roiChart').getContext('2d');
-            new Chart(roiChartCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['1년차', '2년차', '3년차', '4년차', '5년차'],
-                    datasets: [
-                        {
-                            label: '비용 절감',
-                            data: [5, 12, 25, 40, 55],
-                            backgroundColor: '#60a5fa',
-                        },
-                        {
-                            label: '매출 증대',
-                            data: [2, 8, 18, 30, 45],
-                            backgroundColor: '#3b82f6',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, stacked: true }, x: { stacked: true } },
-                    plugins: { 
-                        legend: { position: 'bottom' },
-                        tooltip: { mode: 'index' }
-                     }
-                }
-            });
+            const roiChartCtx = document.getElementById('roiChart').getContext('2d');
+            new Chart(roiChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1년차', '2년차', '3년차', '4년차', '5년차'],
+                    datasets: [
+                        {
+                            label: '비용 절감',
+                            data: [5, 12, 25, 40, 55],
+                            backgroundColor: '#60a5fa',
+                        },
+                        {
+                            label: '매출 증대',
+                            data: [2, 8, 18, 30, 45],
+                            backgroundColor: '#3b82f6',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, stacked: true }, x: { stacked: true } },
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: { mode: 'index' }
+                     }
+                }
+            });
 
-            const phases = document.querySelectorAll('.phase');
-            phases.forEach(phase => {
-                phase.addEventListener('click', () => {
-                    phases.forEach(p => p.classList.remove('active'));
-                    phase.classList.add('active');
-                });
-            });
-            if (phases.length > 0) phases[0].classList.add('active');
-            
-            const riskItems = document.querySelectorAll('.risk-item');
-            riskItems.forEach(item => {
-                const header = item.querySelector('.risk-item-header');
-                const body = item.querySelector('.risk-item-body');
-                const icon = header.querySelector('span');
+            const phases = document.querySelectorAll('.phase');
+            phases.forEach(phase => {
+                phase.addEventListener('click', () => {
+                    phases.forEach(p => p.classList.remove('active'));
+                    phase.classList.add('active');
+                });
+            });
+            if (phases.length > 0) phases[0].classList.add('active');
+            
+            const riskItems = document.querySelectorAll('.risk-item');
+            riskItems.forEach(item => {
+                const header = item.querySelector('.risk-item-header');
+                const body = item.querySelector('.risk-item-body');
+                const icon = header.querySelector('span');
 
-                header.addEventListener('click', () => {
-                    const isActive = header.classList.contains('active');
-                    
-                    riskItems.forEach(i => {
-                        i.querySelector('.risk-item-header').classList.remove('active');
-                        i.querySelector('.risk-item-body').style.maxHeight = '0px';
-                        i.querySelector('.risk-item-header span').style.transform = 'rotate(0deg)';
-                    });
+                header.addEventListener('click', () => {
+                    const isActive = header.classList.contains('active');
+                    
+                    riskItems.forEach(i => {
+                        i.querySelector('.risk-item-header').classList.remove('active');
+                        i.querySelector('.risk-item-body').style.maxHeight = '0px';
+                        i.querySelector('.risk-item-header span').style.transform = 'rotate(0deg)';
+                    });
 
-                    if (!isActive) {
-                        header.classList.add('active');
-                        body.style.maxHeight = body.scrollHeight + "px";
-                        icon.style.transform = 'rotate(45deg)';
-                    }
-                });
-            });
+                    if (!isActive) {
+                        header.classList.add('active');
+                        body.style.maxHeight = body.scrollHeight + "px";
+                        icon.style.transform = 'rotate(45deg)';
+                    }
+                });
+            });
 
-            const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('section');
-            window.addEventListener('scroll', () => {
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (pageYOffset >= sectionTop - 100) {
-                        current = section.getAttribute('id');
-                    }
-                });
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
 
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href').includes(current)) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-            
-            const mobileNav = document.getElementById('mobile-nav');
-            mobileNav.addEventListener('change', (e) => {
-                 window.location.hash = e.target.value;
-            });
-        });
-    </script>
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                 window.location.hash = e.target.value;
+            });
+        });
+    </script>
 </body>
 </html>
