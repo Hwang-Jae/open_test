@@ -327,29 +327,17 @@
 
                 section.innerHTML = loadingText;
 
-                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요.  JSON 배열 형식으로만 응답합니다.";
+                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요.";
                 const userQuery = `NVH 코리아의 AI 도입 활용 분야 중 "${applicationData[area].title}"에 대한 구체적인 세부 실행 Task 3가지를 리스트업해줘.`;
                 const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-                const payload = {
+                 const payload = {
                     contents: [{ parts: [{ text: userQuery }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "task": { "type": "STRING" }
-                                }
-                            }
-                        }
-                    },
                     tools: [{ "google_search": {} }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
                 };
-                
+
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -357,23 +345,20 @@
                         body: JSON.stringify(payload)
                     });
 
+                    if (!response.ok) {
+                        throw new Error(`API response was not ok: ${response.status}`);
+                    }
+
                     const result = await response.json();
                     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
                     if (text) {
-                        const parsedJson = JSON.parse(text);
-                        if (parsedJson && Array.isArray(parsedJson)) {
-                             const tasksHtml = parsedJson.map((t, index) => `<li class="font-medium">${index + 1}. ${t.task}</li>`).join('');
-                             section.innerHTML = `<ul class="space-y-1">${tasksHtml}</ul>`;
-                        } else {
-                            throw new Error('Invalid JSON format received.');
-                        }
+                        modalContent.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
                     } else {
-                        throw new Error('No content received from API.');
+                        modalContent.innerHTML = '<p>내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
                     }
                 } catch (error) {
                     console.error('API 호출 중 오류 발생:', error);
-                    section.innerHTML = '<p class="text-red-500">내용을 생성하는 데 실패했습니다. 다시 시도해 주세요.</p>';
+                    modalContent.innerHTML = '<p>오류가 발생했습니다. 다시 시도해 주세요.</p>';
                 }
             }
 
