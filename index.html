@@ -351,8 +351,15 @@
                     const result = await response.json();
                     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-                    if (text) {
-                        const parsedJson = JSON.parse(text);
+		const stripped = text.replace(/```(?:json)?\s*|\s*```/g, '').trim();
+
+		const match = stripped.match(/\[([\s\S]*)\]/);
+		if (!match) throw new Error('유효한 JSON 배열을 찾을 수 없습니다.');
+		const jsonString = `[${match[1]}]`;
+
+
+                    if (jsonString) {
+                        const parsedJson = JSON.parse(jsonString);
                         if (parsedJson && Array.isArray(parsedJson)) {
                              const tasksHtml = parsedJson.map((t, index) => `<li class="font-medium">${index + 1}. ${t.task}</li>`).join('');
                              section.innerHTML = `<ul class="space-y-1">${tasksHtml}</ul>`;
