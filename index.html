@@ -9,18 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals & Soft Blue -->
-    <!-- Application Structure Plan: The application is designed as a single-page, thematic dashboard rather than a linear report to enhance user engagement and facilitate non-linear exploration. The structure includes: 1) A sticky header for persistent navigation. 2) A 'Vision & Goals' section as the landing point with high-impact KPIs. 3) A 'Core Strategy' section using a card layout for clarity. 4) An interactive 'Application Areas' section with tabs to allow users to dive into specific business units. 5) A visual 'Roadmap' to clearly present the implementation timeline. 6) A 'Budget & ROI' section with interactive charts for financial analysis. 7) A 'Risk Management' section with an accordion for concise presentation. This structure was chosen to guide the user from high-level vision to detailed execution, making complex information digestible and accessible. -->
-    <!-- Visualization & Content Choices: 
-        - Vision KPIs: Goal=Inform -> Method=Dynamic number cards -> Interaction=None -> Justification=Provides immediate, high-level impact -> Library=HTML/CSS.
-        - Core Strategy: Goal=Organize -> Method=Card layout -> Interaction=None -> Justification=Clearly separates strategic pillars for easy comprehension -> Library=HTML/Tailwind.
-        - Application Areas: Goal=Organize/Inform -> Method=Tabbed interface -> Interaction=Click tabs to reveal detailed content -> Justification=Allows users to self-select information relevant to their domain, preventing information overload -> Library=JS/HTML/Tailwind.
-        - Roadmap: Goal=Change/Organize -> Method=Visual timeline diagram -> Interaction=Click on phase to highlight and show details -> Justification=Intuitively represents chronological progression and phase-specific goals -> Library=JS/HTML/Tailwind.
-        - Budget Allocation: Goal=Compare (proportions) -> Method=Donut Chart -> Interaction=Hover for tooltips -> Justification=Effectively shows the distribution of financial resources across different categories -> Library=Chart.js (Canvas).
-        - Expected ROI: Goal=Compare/Change -> Method=Bar Chart -> Interaction=Hover for tooltips -> Justification=Clearly visualizes the financial benefits (cost savings vs. revenue growth) over time -> Library=Chart.js (Canvas).
-        - Risk Management: Goal=Inform -> Method=Accordion component -> Interaction=Click to expand/collapse -> Justification=Presents risks and mitigations in a compact, organized manner without cluttering the UI -> Library=JS/HTML/Tailwind.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background-color: #F8F7F4; }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
@@ -48,7 +36,7 @@
                 <a href="#roi" class="nav-link pb-1 border-b-2 border-transparent">예산 & ROI</a>
                 <a href="#risks" class="nav-link pb-1 border-b-2 border-transparent">리스크 관리</a>
             </div>
-             <div class="md:hidden">
+            <div class="md:hidden">
                 <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
                     <option value="#vision">비전 & 목표</option>
                     <option value="#strategy">핵심 전략</option>
@@ -93,7 +81,7 @@
             </div>
             <div class="grid md:grid-cols-3 gap-8 text-center">
                 <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
-                     <div class="text-4xl text-blue-500 mb-4">📈</div>
+                    <div class="text-4xl text-blue-500 mb-4">📈</div>
                     <h3 class="text-xl font-bold mb-3">데이터 기반 의사결정</h3>
                     <p class="text-gray-600">전사적 데이터를 통합하고 분석하여, 모든 의사결정을 데이터에 근거하여 신속하고 정확하게 내리는 문화를 정착시킵니다.</p>
                     <button data-strategy="데이터 기반 의사결정" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 transition-colors">✨ 세부 실행 방안 생성</button>
@@ -197,7 +185,7 @@
                         <p class="p-5 border-t border-gray-200 text-gray-600">강화된 데이터 보안 정책 수립 및 접근 제어 시스템 구축. 데이터 거버넌스 체계를 확립하여 데이터 정합성과 품질을 지속적으로 관리.</p>
                     </div>
                 </div>
-                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
                         <h3 class="font-semibold text-lg">기술 종속성 및 비용</h3>
                         <span class="text-2xl text-gray-500 transform transition-transform">+</span>
@@ -206,7 +194,7 @@
                         <p class="p-5 border-t border-gray-200 text-gray-600">오픈소스 기술을 적극 활용하여 특정 벤더에 대한 종속성을 최소화. 클라우드 기반의 유연한 인프라를 도입하여 초기 투자 비용을 절감하고 확장성을 확보.</p>
                     </div>
                 </div>
-                 <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="risk-item bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="risk-item-header p-5 flex justify-between items-center cursor-pointer transition-colors">
                         <h3 class="font-semibold text-lg">조직 문화 저항</h3>
                         <span class="text-2xl text-gray-500 transform transition-transform">+</span>
@@ -218,7 +206,6 @@
             </div>
         </section>
         
-        <!-- Modal for AI-generated content -->
         <div id="aiModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 z-[100] items-center justify-center p-4">
             <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-full overflow-y-auto relative">
                 <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-3xl font-bold leading-none">&times;</button>
@@ -322,7 +309,7 @@
             }
             
             async function generateApplicationTasks(area) {
-                const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.items');
+                const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.task-list');
                 if (!section) return;
 
                 section.innerHTML = loadingText;
@@ -550,3 +537,4 @@
     </script>
 </body>
 </html>
+이 코드에서 오류가 발생한 원인과 해결방안을 알려주세요
