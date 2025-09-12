@@ -288,7 +288,7 @@
 
                 const systemPrompt = "당신은 세계적인 기업의 AI 도입 전략을 기획하는 컨설턴트입니다. 사용자 요청에 따라 구체적이고 실현 가능한 AI 도입 실행 방안을 명확하게 제시하세요. 문체는 격식 있고 전문적인 톤을 유지하되, 너무 딱딱하지 않게 작성합니다. 길이는 500자 이내로 제한합니다. 출력은 오직 텍스트로만 구성됩니다.";
                 const userQuery = `NVH 코리아의 AI 도입 전략 중 "${strategy}"에 대한 500자 이내의 구체적인 세부 실행 방안을 제시해줘. 실무에 바로 적용 가능한 현실적인 내용을 포함해.`;
-                const apiKey = "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";
+                const apiKey = "AIzaSyCC6NcOw92EBmQ7e_zOK0hz56aOfR7Zy-o";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                 const payload = {
@@ -329,7 +329,7 @@
 
                 const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요. 각 태스크는 20자 이내로 제한하고, JSON 배열 형식으로만 응답합니다. 형식은 `[{'task': '태스크 내용'}]` 입니다.";
                 const userQuery = `NVH 코리아의 AI 도입 활용 분야 중 "${applicationData[area].title}"에 대한 구체적인 세부 실행 Task 3가지를 리스트업해줘.`;
-                const apiKey = "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";
+                const apiKey = "AIzaSyCC6NcOw92EBmQ7e_zOK0hz56aOfR7Zy-o";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                 const payload = {
