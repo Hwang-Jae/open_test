@@ -327,7 +327,7 @@
 
                 section.innerHTML = loadingText;
 
-                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요. 각 태스크는 20자 이내로 제한하고, JSON 배열 형식으로만 응답합니다.";
+                const systemPrompt = "당신은 AI 도입 컨설턴트입니다. 특정 사업 분야에 대한 AI 도입 세부 실행 태스크 3가지를 구체적이고 간결하게 작성해주세요.  JSON 배열 형식으로만 응답합니다.";
                 const userQuery = `NVH 코리아의 AI 도입 활용 분야 중 "${applicationData[area].title}"에 대한 구체적인 세부 실행 Task 3가지를 리스트업해줘.`;
                 const apiKey = "AIzaSyAXQwegI8pifF40RoUIpJgozTL-n5K5wrQ";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
