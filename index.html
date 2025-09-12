@@ -336,17 +336,7 @@
 
                 const payload = {
                     contents: [{ parts: [{ text: userQuery }] }],
-                    generationConfig: {
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "task": { "type": "STRING" }
-                                }
-                            }
-                        }
-                    },
+                    
                     tools: [{ "google_search": {} }],
                     systemInstruction: { parts: [{ text: systemPrompt }] }
                 };
