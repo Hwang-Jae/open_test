@@ -324,7 +324,6 @@
             async function generateApplicationTasks(area) {
                 const section = document.querySelector(`[data-tab="${area}"]`).closest('.bg-white').querySelector('.task-list');
                 if (!section) return;
-		const item = applicationData[area]?.items;
 
                 section.innerHTML = loadingText;
 
