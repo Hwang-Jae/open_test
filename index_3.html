@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVH Korea 데이터 기반 품질 관리 AI 혁신 계획</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Muted Teal, Deep Blue) -->
+    <!-- Application Structure Plan: A single-page dashboard designed around three core quality management themes, accessible via a primary tab navigation. This structure prioritizes easy access to detailed, independent execution plans for each complex area. A central Bar Chart aggregates key quantitative goals, offering an immediate comparative overview. Detailed execution steps within each tab are managed via collapsible accordions to minimize vertical scrolling and maximize information focus. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Aggregate targets (quantitative improvement percentages). -> Goal: Compare/Inform. -> Viz: Comparative Bar Chart (Chart.js). -> Interaction: Tooltips. -> Justification: Clearly shows the projected impact of each initiative side-by-side.
+    - Report Info: Phased execution steps and resources. -> Goal: Organize/Inform. -> Viz: Accordion-style collapsible text blocks (HTML/JS). -> Interaction: Click to expand/collapse. -> Justification: Essential for presenting sequential, dense project details without overwhelming the user interface.
+    - Report Info: Individual KPI targets. -> Goal: Inform/Progress. -> Viz: Donut Charts (Chart.js). -> Interaction: Center text for target value. -> Justification: Provides a focused, quick measure of achievement against key percentage targets (e.g., accuracy, reduction rates).
+    - CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f7f4;
+            color: #333;
+        }
+        .tab-active {
+            border-color: #005f73;
+            background-color: #e0f2f1;
+            color: #005f73;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .kpi-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 250px;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 500px; /* 충분히 큰 값으로 설정하여 내용이 보이도록 함 */
+        }
+    </style>
+</head>
+<body class="bg-stone-50">
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">NVH Korea 데이터 기반 품질 관리 AI 혁신 계획</h1>
+            <p class="text-lg text-gray-500 mt-2">지능형 분석 및 자동화 기반의 선제적 품질 확보 로드맵</p>
+        </header>
+
+        <main>
+            <section id="overview" class="mb-12 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-700 border-b pb-2 mb-4">프로젝트 개요 및 비전</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    본 혁신 계획은 **불량 발생 후 대응 방식**을 **데이터 기반의 선제적 예측 및 제어 방식**으로 전환하는 것을 목표로 합니다. AI를 활용하여 품질 데이터의 잠재적 패턴을 분석하고, 검사 과정을 자동화하며, 실시간으로 품질 상태를 모니터링함으로써 품질 비용을 절감하고 제품 신뢰도를 극대화합니다. 아래 대시보드를 통해 세 가지 핵심 과제의 구체적인 실행 방안을 확인할 수 있습니다.
+                </p>
+            </section>
+
+            <section id="integrated-kpi" class="mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold text-gray-700 text-center mb-4">통합 핵심 성과 지표 (KPI) 목표</h2>
+                    <p class="text-center text-gray-500 mb-6">각 AI 시스템 도입을 통해 달성하고자 하는 주요 정량적 목표를 비교합니다.</p>
+                     <div class="chart-container">
+                        <canvas id="integratedKpiChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <div class="mb-8 border-b border-gray-200">
+                <nav class="flex flex-wrap -mb-px" id="tabs">
+                    <button data-tab="analysis" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg tab-active">
+                        불량 원인 분석 AI
+                    </button>
+                    <button data-tab="inspection" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        최종 품질 검사 자동화
+                    </button>
+                    <button data-tab="monitoring" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        실시간 품질 모니터링
+                    </button>
+                </nav>
+            </div>
+
+            <div id="tab-content">
+                <article id="analysis" class="tab-pane active">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">불량 원인 분석 AI 모델 개발</h3>
+                            <p class="text-gray-600 mb-6">
+                                다차원적인 공정 데이터, 품질 검사 기록, 원자재 정보 등 이기종 데이터를 통합 분석하여 불량 발생에 영향을 미치는 숨겨진 패턴과 핵심 인자를 AI가 찾아냅니다. 이를 통해 근본적인 불량 원인을 파악하고 재발 방지 대책을 신속하게 수립할 수 있도록 지원합니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="analysisKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">불량 원인 파악 시간 단축</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="analysisKpiChart2"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">재발률 감소</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="inspection" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">최종 품질 검사 자동화 시스템 (AI 기반)</h3>
+                            <p class="text-gray-600 mb-6">
+                                3D 스캐너, 고해상도 비전 시스템 등을 활용하여 제품의 치수, 외관, 기능 결함을 100% 전수 검사합니다. AI 딥러닝 모델이 미세 결함과 변수를 학습하여 사람의 주관이 개입될 여지를 없애고, 검사 속도를 획기적으로 향상시켜 출하 품질의 신뢰도를 높입니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="inspectionKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">검사 정확도</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="inspectionKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">검사 비용 절감</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="monitoring" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">실시간 품질 모니터링 및 예측 시스템</h3>
+                            <p class="text-gray-600 mb-6">
+                                생산 라인의 주요 지점(Critical Control Points)에서 수집되는 센서 및 공정 데이터를 실시간으로 시각화하고, AI가 품질 저하 징후를 미리 예측하여 경고를 발생시킵니다. 작업자는 예측 경고를 기반으로 즉각적인 조치(Parameter 조정 등)를 취하여 불량을 예방할 수 있습니다.
+                            </p>
+                             <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="monitoringKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">불량 예방률 (사전 경고 조치 성공률)</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="monitoringKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">공정 변동성 감소</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.getElementById('tabs');
+            const tabPanes = document.getElementById('tab-content').getElementsByClassName('tab-pane');
+
+            const projectData = {
+                analysis: {
+                    kpi1: { label: '원인 파악 시간 단축', value: 75, unit: '%' },
+                    kpi2: { label: '재발률 감소', value: 40, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 데이터 통합 및 품질 데이터베이스 구축 (4개월)', 
+                            content: '<li>공정(MES), 설비(PLC), 품질 검사, 원자재 Lot 데이터 통합 및 표준화</li><li>과거 불량 이력 및 관련 공정 데이터를 연계한 통합 데이터베이스(Data Lake) 구축</li><li>불량 유형별 특성 분석 및 AI 학습을 위한 데이터셋 준비</li>',
+                            resources: '인력: 데이터 아키텍트 1명, 품질 엔지니어 2명<br>기술: 데이터 통합 솔루션, NoSQL/Hadoop, Spark'
+                        },
+                        { 
+                            title: '2단계: AI 모델 개발 및 지식 그래프 구축 (5개월)', 
+                            content: '<li>주요 공정 변수와 불량 발생 간의 인과 관계를 분석하는 설명 가능 AI(XAI) 모델 개발</li><li>불량 원인, 조건, 조치 사항을 연결하는 품질 지식 그래프(Knowledge Graph) 구축</li><li>이상 탐지(Anomaly Detection) 모델을 활용하여 미지의 불량 패턴 사전 감지</li>',
+                            resources: '인력: AI/ML 엔지니어 3명, 품질 전문가 1명<br>기술: Deep Forest/Boosting Models, Neo4j, SHAP/LIME'
+                        },
+                        { 
+                            title: '3단계: 현장 검증 및 리포팅 자동화 (3개월)', 
+                            content: '<li>신규 불량 발생 시 AI 분석 모델을 적용하여 원인 진단 및 전문가 진단 결과와 비교 검증</li><li>AI가 도출한 핵심 원인을 시각화하고, 근본 원인 분석(RCA) 리포트 자동 생성 기능 구현</li><li>분석 결과에 따른 공정 조정 가이드라인 자동 제안 기능 개발</li>',
+                            resources: '인력: 품질 관리자 3명, 시스템 개발자 2명<br>기술: BI 툴(Tableau/Power BI), 웹 대시보드 시스템, API 연동'
+                        },
+                        { 
+                            title: '4단계: 전사 확산 및 모델 고도화 (2개월)', 
+                            content: '<li>AI 분석 모델을 전사 품질 관리 시스템(QMS)에 통합하고 표준 프로세스로 정착</li><li>분석 결과 및 조치 결과를 모델에 피드백하여 지속적으로 예측/진단 성능 향상</li><li>다양한 제품군 및 공정으로 분석 범위 확장</li>',
+                            resources: '인력: IT 지원팀, 전사 품질 관리팀<br>기술: MLOps 파이프라인, 클라우드 기반 스케일링'
+                        }
+                    ]
+                },
+                inspection: {
+                    kpi1: { label: '검사 정확도 (A.I vs 육안)', value: 99.9, unit: '%' },
+                    kpi2: { label: '검사 비용 절감', value: 50, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 검사 장비 도입 및 셋업 (3개월)', 
+                            content: '<li>최종 검사 공정에 3D 측정 장비(예: 레이저 스캐너) 및 고해상도 비전 카메라 시스템 설치</li><li>검사 데이터 수집 및 전송을 위한 엣지 컴퓨팅 하드웨어(Edge Device) 구성</li><li>정상 및 불량 제품 샘플 확보 및 검사 환경(조명, 위치) 표준화</li>',
+                            resources: '인력: 자동화 엔지니어 2명, 장비 공급업체<br>기술: 고성능 비전 시스템, 산업용 PC, 데이터 전송 프로토콜'
+                        },
+                        { 
+                            title: '2단계: AI 검사 모델 개발 및 학습 (5개월)', 
+                            content: '<li>이미지/3D 데이터를 활용한 결함 유형별 딥러닝 모델(Classification, Segmentation) 개발</li><li>검사 항목별 모델 훈련 및 정밀도, 재현율, F-1 Score 최적화</li><li>Few-shot Learning 또는 전이 학습(Transfer Learning)을 활용하여 학습 데이터 부족 문제 해결</li>',
+                            resources: '인력: 딥러닝 엔지니어 3명, 품질 검사 전문가 1명<br>기술: PyTorch/TensorFlow, GAN(합성 데이터 생성), GPU 서버'
+                        },
+                        { 
+                            title: '3단계: 파일럿 적용 및 통합 테스트 (4개월)', 
+                            content: '<li>특정 최종 검사 라인에 AI 검사 시스템을 파일럿 적용하여 속도와 정확성 현장 검증</li><li>AI 검사 결과와 실제 품질 결과 간의 편차 분석 및 모델 튜닝</li><li>불량 판정 시 자동 라벨 부착, 불량품 격리 등 후처리 시스템과의 연동 개발</li>',
+                            resources: '인력: 현장 작업자 4명, 시스템 통합 전문가 2명<br>기술: PLC/MES 연동, 실시간 데이터 처리 기술, UI/UX 개선'
+                        },
+                        { 
+                            title: '4단계: 전수 검사 체계 확립 (2개월)', 
+                            content: '<li>전체 최종 검사 라인에 AI 자동 검사 시스템을 확대 적용하여 100% 전수 검사 체계 확립</li><li>시스템의 장기 안정성 및 유지보수 체계(원격 모니터링 등) 구축</li><li>검사 데이터 기반의 공정 개선 피드백 루프 자동화</li>',
+                            resources: '인력: 품질 보증팀, IT 지원팀<br>기술: 클라우드 기반 관리 플랫폼, 보안 시스템'
+                        }
+                    ]
+                },
+                monitoring: {
+                    kpi1: { label: '불량 예방률', value: 85, unit: '%' },
+                    kpi2: { label: '공정 변동성 감소', value: 20, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 핵심 공정 데이터 스트리밍 구축 (3개월)', 
+                            content: '<li>핵심 품질 영향 공정(예: 압착, 접착, 재단)에 센서 데이터 수집 포인트 정의 및 설치</li><li>대용량 공정 데이터를 실시간으로 수집, 처리, 저장하는 스트리밍 파이프라인 구축</li><li>데이터 전처리 및 이상치(Outlier) 필터링 로직 구현</li>',
+                            resources: '인력: 데이터 엔지니어 2명, 공정 전문가 1명<br>기술: Kafka/Fink, 시계열 데이터베이스, 실시간 ETL 도구'
+                        },
+                        { 
+                            title: '2단계: 실시간 품질 예측 모델 개발 (4개월)', 
+                            content: '<li>공정 데이터 기반의 품질 지수(Quality Index)를 실시간으로 산출하는 예측 모델 개발</li><li>품질 저하 임계값에 근접하기 전에 경고를 발생시키는 조기 경고(Early Warning) AI 모델 훈련 (RNN/LSTM 기반)</li><li>공정 데이터와 최종 품질 결과 간의 시간 지연(Time Lag)을 고려한 모델 설계</li>',
+                            resources: '인력: AI/ML 엔지니어 3명, 공정 엔지니어 1명<br>기술: GPU 서버, 분산 컴퓨팅 환경, 시계열 분석 라이브러리'
+                        },
+                        { 
+                            title: '3단계: 품질 모니터링 대시보드 구축 (3개월)', 
+                            content: '<li>공정 담당자와 관리자가 쉽게 이해할 수 있는 실시간 품질 모니터링 대시보드(SCADA 연동) 개발</li><li>AI 예측 결과, 경고 발생 시점, 관련 공정 변수를 즉각적으로 시각화</li><li>모바일 알림 기능 및 즉각적인 피드백 입력 시스템 구현</li>',
+                            resources: '인력: UI/UX 디자이너 1명, 프론트엔드 개발자 2명<br>기술: Web Sockets, Grafana/Kibana, 모바일 앱 연동'
+                        },
+                        { 
+                            title: '4단계: 예측 기반 공정 제어 도입 (2개월)', 
+                            content: '<li>AI의 예측 경고를 기반으로 공정 변수를 자동으로 미세 조정하는 제어 루프(Close-loop Control) 구축</li><li>생산 라인 전반에 걸쳐 실시간 품질 모니터링 시스템을 확장 배포</li><li>예측 정확도와 공정 제어 안정성을 주기적으로 평가 및 보정</li>',
+                            resources: '인력: 제어 시스템 엔지니어 2명, IT 보안팀<br>기술: 고급 제어 알고리즘(MPC), 통신 프로토콜 보안'
+                        }
+                    ]
+                }
+            };
+            
+            function createAccordions(tabId) {
+                const container = document.querySelector(`#${tabId} .accordion-container`);
+                container.innerHTML = '';
+                const data = projectData[tabId];
+                if (!data) return;
+
+                data.phases.forEach((phase, index) => {
+                    const accordionItem = document.createElement('div');
+                    accordionItem.className = 'border border-gray-200 rounded-lg';
+                    
+                    const button = document.createElement('button');
+                    button.className = 'accordion-button w-full text-left p-4 bg-gray-50 hover:bg-gray-100 font-semibold flex justify-between items-center transition duration-200 text-gray-700';
+                    button.innerHTML = `<span>${phase.title}</span> <span class="transform transition-transform duration-300 icon-arrow">▼</span>`;
+
+                    const content = document.createElement('div');
+                    content.className = 'accordion-content p-4 border-t bg-white';
+                    content.style.maxHeight = '0';
+                    
+                    content.innerHTML = `
+                        <h4 class="font-semibold text-teal-700 mb-2">주요 세부 실행 과제</h4>
+                        <ul class="list-disc list-inside text-gray-600 mb-4 ml-4">${phase.content}</ul>
+                        <h4 class="font-semibold text-teal-700 mb-2">필요 리소스 / 기술 스택</h4>
+                        <p class="text-gray-600">${phase.resources}</p>
+                    `;
+
+                    accordionItem.appendChild(button);
+                    accordionItem.appendChild(content);
+                    container.appendChild(accordionItem);
+
+                    button.addEventListener('click', () => {
+                        const icon = button.querySelector('.icon-arrow');
+                        const isVisible = content.classList.contains('open');
+
+                        if (isVisible) {
+                            content.classList.remove('open');
+                            content.style.maxHeight = '0';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            // Close other open accordions in the same tab
+                            document.querySelectorAll(`#${tabId} .accordion-content.open`).forEach(el => {
+                                el.style.maxHeight = '0';
+                                el.classList.remove('open');
+                                el.previousElementSibling.querySelector('.icon-arrow').style.transform = 'rotate(0deg)';
+                            });
+
+                            content.classList.add('open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                });
+            }
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const tabId = e.target.getAttribute('data-tab');
+
+                    document.querySelectorAll('.tab-button').forEach(button => {
+                        button.classList.remove('tab-active');
+                    });
+                    e.target.classList.add('tab-active');
+                    
+                    for (let i = 0; i < tabPanes.length; i++) {
+                        if (tabPanes[i].id === tabId) {
+                            tabPanes[i].classList.remove('hidden');
+                        } else {
+                            tabPanes[i].classList.add('hidden');
+                        }
+                    }
+                }
+            });
+
+            // Chart.js Plugin for Donut Center Text
+            const doughnutCenterText = {
+                id: 'doughnut-center-text',
+                beforeDraw: function(chart) {
+                    if (chart.options.elements.center) {
+                        const { ctx, chartArea: { top, right, bottom, left, width, height } } = chart;
+                        ctx.save();
+                        const centerConfig = chart.options.elements.center;
+                        const fontStyle = centerConfig.fontStyle || 'Arial';
+                        ctx.font = `24px ${fontStyle}`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = centerConfig.color || '#000';
+                        const text = centerConfig.text;
+                        ctx.fillText(text, width / 2, top + (height / 2));
+                        ctx.restore();
+                    }
+                }
+            };
+            
+            const createKpiChart = (canvasId, dataKey, color) => {
+                const data = projectData[canvasId.replace('KpiChart1', '').replace('KpiChart2', '')][dataKey];
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const targetValue = data.value;
+                
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [data.label, '목표 미달성'],
+                        datasets: [{
+                            data: [targetValue, 100 - targetValue],
+                            backgroundColor: [color, '#e0e0e0'],
+                            borderColor: ['#ffffff', '#ffffff'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}${data.unit}`;
+                                    }
+                                }
+                            }
+                        },
+                        elements: {
+                            center: {
+                                text: `${targetValue}${data.unit}`,
+                                color: color,
+                                fontStyle: 'bold'
+                            }
+                        }
+                    },
+                    plugins: [doughnutCenterText]
+                });
+            };
+
+            const createIntegratedKpiChart = () => {
+                const ctx = document.getElementById('integratedKpiChart').getContext('2d');
+                const data = {
+                    labels: ['원인 파악 시간 단축 (%)', '검사 정확도 (%)', '불량 예방률 (%)'],
+                    datasets: [
+                        {
+                            label: '불량 원인 분석 AI',
+                            data: [projectData.analysis.kpi1.value, 0, 0], 
+                            backgroundColor: '#005f73',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: '최종 품질 검사 자동화',
+                            data: [0, projectData.inspection.kpi1.value, 0],
+                            backgroundColor: '#00adad',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: '실시간 품질 모니터링',
+                            data: [0, 0, projectData.monitoring.kpi1.value],
+                            backgroundColor: '#aec3b0',
+                            stack: 'stack1'
+                        }
+                    ]
+                };
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '목표 개선/정확도 (%)'
+                                }
+                            },
+                             y: {
+                                stacked: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { size: 14 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.raw + '% 목표';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            // Initialize Charts
+            createIntegratedKpiChart();
+            createKpiChart('analysisKpiChart1', 'kpi1', '#005f73'); 
+            createKpiChart('analysisKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('inspectionKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('inspectionKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('monitoringKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('monitoringKpiChart2', 'kpi2', '#00adad');
+
+            // Initialize Accordions
+            createAccordions('analysis');
+            createAccordions('inspection');
+            createAccordions('monitoring');
+        });
+    </script>
+</body>
+</html>

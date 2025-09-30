@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVH Korea SCM 최적화 AI 혁신 계획</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Muted Teal, Deep Blue) -->
+    <!-- Application Structure Plan: A single-page dashboard designed for SCM exploration, using three main tabs to segment complex, distinct SCM components (Demand/Inventory, Logistics/Network, Risk Management). This facilitates focused study of each area's phased plan. The central Bar Chart provides a quick comparison of the overall expected quantitative impacts (savings, accuracy). Accordion structures within each tab are used to deliver step-by-step project details, prioritizing ease of navigation and information density. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Overall quantitative targets (e.g., cost reduction, accuracy). -> Goal: Compare/Inform. -> Viz: Comparative Bar Chart (Chart.js). -> Interaction: Tooltips. -> Justification: Effective for comparing the scale of impact across the three initiatives.
+    - Report Info: Phased execution details (steps, resources). -> Goal: Organize/Inform. -> Viz: Accordion-style collapsible text blocks (HTML/JS). -> Interaction: Click to expand/collapse. -> Justification: Manages the high density of sequential project plan information efficiently.
+    - Report Info: Individual KPI targets. -> Goal: Inform/Progress. -> Viz: Donut Charts (Chart.js). -> Interaction: Center text for target value. -> Justification: Offers immediate visual feedback on key percentage performance goals (e.g., forecasting accuracy, cost reduction rates).
+    - CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f7f4;
+            color: #333;
+        }
+        .tab-active {
+            border-color: #005f73;
+            background-color: #e0f2f1;
+            color: #005f73;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .kpi-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 250px;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 500px; /* 충분히 큰 값으로 설정하여 내용이 보이도록 함 */
+        }
+    </style>
+</head>
+<body class="bg-stone-50">
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">NVH Korea 공급망 관리 (SCM) 최적화 AI 혁신 계획</h1>
+            <p class="text-lg text-gray-500 mt-2">AI 기반 수요 예측, 물류 효율화, 리스크 대응 역량 강화 로드맵</p>
+        </header>
+
+        <main>
+            <section id="overview" class="mb-12 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-700 border-b pb-2 mb-4">프로젝트 개요 및 비전</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    본 계획은 SCM 전반에 걸쳐 데이터 기반 의사결정 시스템을 구축하여 **비용 절감, 효율 증대, 리스크 최소화**를 달성하는 것을 목표로 합니다. AI를 통해 시장 수요를 정확히 예측하고, 물류 구조를 최적화하며, 글로벌 공급망의 잠재적 위험을 선제적으로 관리함으로써 NVH Korea의 공급망 탄력성(Resilience)을 확보합니다. 아래 대시보드를 통해 세 가지 핵심 과제의 실행 단계와 목표를 탐색할 수 있습니다.
+                </p>
+            </section>
+
+            <section id="integrated-kpi" class="mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold text-gray-700 text-center mb-4">통합 핵심 성과 지표 (KPI) 목표</h2>
+                    <p class="text-center text-gray-500 mb-6">각 AI 시스템 도입을 통해 달성하고자 하는 주요 정량적 목표를 비교합니다.</p>
+                     <div class="chart-container">
+                        <canvas id="integratedKpiChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <div class="mb-8 border-b border-gray-200">
+                <nav class="flex flex-wrap -mb-px" id="tabs">
+                    <button data-tab="demand" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg tab-active">
+                        AI 수요 예측 및 재고 최적화
+                    </button>
+                    <button data-tab="logistics" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        물류 네트워크 최적화
+                    </button>
+                    <button data-tab="risk" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        공급망 리스크 관리
+                    </button>
+                </nav>
+            </div>
+
+            <div id="tab-content">
+                <article id="demand" class="tab-pane active">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">AI 수요 예측 및 재고 최적화 시스템 구축</h3>
+                            <p class="text-gray-600 mb-6">
+                                과거 판매 데이터, 시장 트렌드, 경제 지표, 계절성 등 내부 및 외부 요인을 통합하여 AI가 제품 수요를 예측합니다. 이를 기반으로 안전 재고 수준, 발주 시점, 최적 주문량을 자동으로 산출하여 재고 부족 및 과잉 문제를 해소하고 재고 유지 비용을 최소화합니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="demandKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">수요 예측 정확도 (MAPE)</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="demandKpiChart2"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">재고 유지 비용 절감</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="logistics" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">물류 네트워크 및 운송 최적화 시스템</h3>
+                            <p class="text-gray-600 mb-6">
+                                원자재/제품의 생산지, 창고 위치, 고객 배송지, 운송 수단 및 비용 등의 데이터를 분석하여 최적의 물류 경로와 창고 위치를 제안합니다. AI가 실시간 교통 상황, 날씨 변화 등을 반영하여 최적 운송 계획을 수립하고, 전체 물류 비용을 최소화하며 배송 시간을 단축합니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="logisticsKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">물류 운송 비용 절감</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="logisticsKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">리드 타임 단축</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="risk" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">공급망 리스크 관리 및 예측 시스템</h3>
+                            <p class="text-gray-600 mb-6">
+                                주요 공급업체의 재무 상태, 지정학적 뉴스, 자연재해 정보, 운송 지연 데이터 등 다양한 외부 데이터를 모니터링합니다. AI는 이를 분석하여 공급망 중단 위험을 조기에 예측하고, 대체 공급선 확보, 재고 증설 등 사전 대응 시나리오를 자동으로 제안하여 비즈니스 연속성을 확보합니다.
+                            </p>
+                             <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="riskKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">공급망 중단 예측 정확도</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="riskKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">리스크 대응 시간 단축</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.getElementById('tabs');
+            const tabPanes = document.getElementById('tab-content').getElementsByClassName('tab-pane');
+
+            const projectData = {
+                demand: {
+                    kpi1: { label: '수요 예측 정확도 (MAPE)', value: 85, unit: '%' },
+                    kpi2: { label: '재고 유지 비용 절감', value: 25, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 데이터 통합 및 수요 영향 인자 식별 (4개월)', 
+                            content: '<li>판매 이력, 프로모션, 영업 계획 등 내부 데이터와 시장/경제 지표, 경쟁사 동향 등 외부 데이터 통합</li><li>데이터 정제 및 시계열 분석을 통한 수요 변동의 핵심 영향 인자(Feature) 정의</li><li>제품군/지역별 특성에 맞는 예측 모델 그룹핑</li>',
+                            resources: '인력: 데이터 분석가 2명, 영업/마케팅 전문가 1명<br>기술: 데이터 파이프라인(ETL), 시계열 데이터베이스, 클라우드 기반 데이터 레이크'
+                        },
+                        { 
+                            title: '2단계: AI 예측 모델 개발 및 재고 최적화 알고리즘 설계 (5개월)', 
+                            content: '<li>시계열 예측(Time Series Forecasting) 모델(Prophet, DeepAR, Transformer) 훈련 및 검증</li><li>재고 부족 비용과 과잉 재고 비용을 고려한 최적 안전 재고 산출 알고리즘 개발</li><li>재고 최적화 로직을 ERP/SCM 시스템과 연동하는 시뮬레이션 환경 구축</li>',
+                            resources: '인력: AI/ML 엔지니어 3명, SCM 전문가 1명<br>기술: Python(Scikit-learn/TensorFlow), 최적화 라이브러리(PuLP/Gurobi)'
+                        },
+                        { 
+                            title: '3단계: 파일럿 적용 및 현업 의사결정 지원 (3개월)', 
+                            content: '<li>주요 제품군에 AI 예측 모델을 파일럿 적용하여 실제 수요 예측 결과 및 재고 수준 변화 검증</li><li>AI 예측 결과와 기존 담당자 예측 결과를 비교하는 협업 대시보드 구축</li><li>담당자의 피드백을 반영하여 모델의 예측 오차(MAPE) 개선 작업 반복</li>',
+                            resources: '인력: SCM 담당자 3명, 시스템 통합 전문가 2명<br>기술: 웹 기반 대시보드(React/Vue), 예측 시각화 도구'
+                        },
+                        { 
+                            title: '4단계: 시스템 확대 및 자동 계획 수립 (2개월)', 
+                            content: '<li>전체 제품군 및 지역으로 수요 예측 및 재고 최적화 시스템 확대 적용</li><li>AI 기반의 자동화된 재고 주문 및 발주 계획 수립 기능 구현</li><li>영업 계획 변동 시 예측 결과를 실시간으로 업데이트하는 시스템 구축</li>',
+                            resources: '인력: SCM 기획팀, IT 인프라팀<br>기술: MLOps 자동화, 클라우드 기반 스케일링, API 게이트웨이'
+                        }
+                    ]
+                },
+                logistics: {
+                    kpi1: { label: '물류 운송 비용 절감', value: 15, unit: '%' },
+                    kpi2: { label: '리드 타임 단축', value: 20, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 물류 데이터 통합 및 네트워크 현황 분석 (3개월)', 
+                            content: '<li>운송 이력, 운임 비용, 창고 입출고 정보, 차량 및 컨테이너 위치 데이터 통합</li><li>물류 네트워크의 현재 흐름, 병목 현상, 비효율적 구간에 대한 시각화 분석 (GIS 활용)</li><li>운송 경로 최적화를 위한 지리 정보 시스템(GIS) 데이터베이스 구축</li>',
+                            resources: '인력: 물류 엔지니어 2명, 데이터 분석가 1명<br>기술: GPS/IoT 센서 연동, GIS 툴(ArcGIS/QGIS), 빅데이터 플랫폼'
+                        },
+                        { 
+                            title: '2단계: AI 기반 운송 및 네트워크 최적화 모델 개발 (5개월)', 
+                            content: '<li>다중 목적 최적화 알고리즘을 활용한 창고 위치, 운송 경로 및 모드(Mode) 선정 모델 개발</li><li>실시간 변동(교통, 날씨, 통관)을 고려한 동적 라우팅(Dynamic Routing) 최적화 알고리즘 훈련</li><li>가상 시뮬레이션을 통한 다양한 물류 네트워크 시나리오 테스트</li>',
+                            resources: '인력: 최적화 전문가 2명, AI/ML 엔지니어 2명<br>기술: 강화 학습(Reinforcement Learning), 그래프 최적화 알고리즘, Cloud ML Engine'
+                        },
+                        { 
+                            title: '3단계: 파일럿 적용 및 통합 운송 관제 시스템 구축 (3개월)', 
+                            content: '<li>주요 운송 구간 및 창고 지역에 최적화 모델을 파일럿 적용하여 효과 검증</li><li>AI가 생성한 운송 계획을 현장 운송 관리 시스템(TMS)에 연동하는 인터페이스 개발</li><li>실시간 운송 상태 모니터링 및 이상 발생 시 대체 경로를 자동 제안하는 시스템 구현</li>',
+                            resources: '인력: 운송 담당자 3명, 시스템 통합 전문가 2명<br>기술: TMS/WMS 연동 API, 실시간 관제 대시보드'
+                        },
+                        { 
+                            title: '4단계: 물류 네트워크 전사 확장 및 지능화 (2개월)', 
+                            content: '<li>전체 국내외 물류 네트워크에 최적화 시스템 확장 및 배포</li><li>자동 운송 계약 최적화(예: 단가, 수량) 기능을 AI에 통합</li><li>공급망 전반의 물류 비용 절감 효과 정량화 및 관리체계 구축</li>',
+                            resources: '인력: SCM 기획팀, 물류 운영팀<br>기술: 글로벌 물류 관제 플랫폼, 블록체인 기반 투명성 확보(선택적)'
+                        }
+                    ]
+                },
+                risk: {
+                    kpi1: { label: '공급망 중단 예측 정확도', value: 90, unit: '%' },
+                    kpi2: { label: '리스크 대응 시간 단축', value: 50, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 외부 데이터 수집 및 리스크 모니터링 플랫폼 구축 (3개월)', 
+                            content: '<li>주요 공급업체 재무 데이터, 지정학적 리스크 지수, 기상/재난 정보, 글로벌 뉴스 등 외부 데이터 스트리밍 채널 확보</li><li>공급업체 위치 및 공급망 구조를 시각화하는 리스크 대시보드 개발</li><li>리스크 이벤트 발생 시 경고 알림 시스템 설계</li>',
+                            resources: '인력: 리스크 관리 전문가 1명, 데이터 엔지니어 2명<br>기술: News API, 기상 데이터 API, 리스크 지표 스크래핑 툴'
+                        },
+                        { 
+                            title: '2단계: AI 기반 리스크 예측 및 영향도 분석 모델 개발 (5개월)', 
+                            content: '<li>외부 이벤트와 과거 공급 중단 이력 간의 상관관계를 학습하는 예측 모델 훈련 (NLP 기반 뉴스 분석 포함)</li><li>공급 중단 발생 시 예상되는 재고 부족, 생산 차질, 비용 증가를 시뮬레이션하는 영향도(Impact) 분석 모델 개발</li><li>잠재적 위험 수준을 점수화하는 리스크 스코어링 시스템 구축</li>',
+                            resources: '인력: 데이터 과학자 3명, 리스크 관리 담당자 1명<br>기술: 텍스트 마이닝/NLP, 시뮬레이션 모델링, 베이지안 네트워크'
+                        },
+                        { 
+                            title: '3단계: 대응 시나리오 자동 제안 및 검증 (3개월)', 
+                            content: '<li>AI가 예측한 위험 이벤트에 대해 대체 공급선 전환, 운송 모드 변경, 긴급 재고 확보 등 복수의 대응 시나리오 자동 생성</li><li>각 시나리오별 비용 및 효과를 시뮬레이션하여 최적 대응 방안을 제안</li><li>정기적인 공급망 취약성 평가(Vulnerability Assessment) 실시</li>',
+                            resources: '인력: SCM 기획팀, 구매팀 2명<br>기술: 최적화 시뮬레이터, 의사결정 지원 시스템(DSS)'
+                        },
+                        { 
+                            title: '4단계: 시스템 통합 및 리스크 대응 체계 정착 (2개월)', 
+                            content: '<li>AI 리스크 시스템을 SCM 및 ERP 시스템에 통합하여 리스크 경고 시 자동 조치(예: 대체 공급업체에 PO 자동 발주) 기능 구현</li><li>리스크 관리 성과 지표(KPI)를 정기적으로 모니터링하고 보고 체계 구축</li><li>전사적인 리스크 대응 훈련 및 교육 프로그램 운영</li>',
+                            resources: '인력: 경영진, IT 지원팀, 전사 SCM 담당자<br>기술: 통합 대시보드, 비상 계획 시스템(BRP) 연동'
+                        }
+                    ]
+                }
+            };
+            
+            function createAccordions(tabId) {
+                const container = document.querySelector(`#${tabId} .accordion-container`);
+                container.innerHTML = '';
+                const data = projectData[tabId];
+                if (!data) return;
+
+                data.phases.forEach((phase, index) => {
+                    const accordionItem = document.createElement('div');
+                    accordionItem.className = 'border border-gray-200 rounded-lg';
+                    
+                    const button = document.createElement('button');
+                    button.className = 'accordion-button w-full text-left p-4 bg-gray-50 hover:bg-gray-100 font-semibold flex justify-between items-center transition duration-200 text-gray-700';
+                    button.innerHTML = `<span>${phase.title}</span> <span class="transform transition-transform duration-300 icon-arrow">▼</span>`;
+
+                    const content = document.createElement('div');
+                    content.className = 'accordion-content p-4 border-t bg-white';
+                    content.style.maxHeight = '0';
+                    
+                    content.innerHTML = `
+                        <h4 class="font-semibold text-teal-700 mb-2">주요 세부 실행 과제</h4>
+                        <ul class="list-disc list-inside text-gray-600 mb-4 ml-4">${phase.content}</ul>
+                        <h4 class="font-semibold text-teal-700 mb-2">필요 리소스 / 기술 스택</h4>
+                        <p class="text-gray-600">${phase.resources}</p>
+                    `;
+
+                    accordionItem.appendChild(button);
+                    accordionItem.appendChild(content);
+                    container.appendChild(accordionItem);
+
+                    button.addEventListener('click', () => {
+                        const icon = button.querySelector('.icon-arrow');
+                        const isVisible = content.classList.contains('open');
+
+                        if (isVisible) {
+                            content.classList.remove('open');
+                            content.style.maxHeight = '0';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            // Close other open accordions in the same tab
+                            document.querySelectorAll(`#${tabId} .accordion-content.open`).forEach(el => {
+                                el.style.maxHeight = '0';
+                                el.classList.remove('open');
+                                el.previousElementSibling.querySelector('.icon-arrow').style.transform = 'rotate(0deg)';
+                            });
+
+                            content.classList.add('open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                });
+            }
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const tabId = e.target.getAttribute('data-tab');
+
+                    document.querySelectorAll('.tab-button').forEach(button => {
+                        button.classList.remove('tab-active');
+                    });
+                    e.target.classList.add('tab-active');
+                    
+                    for (let i = 0; i < tabPanes.length; i++) {
+                        if (tabPanes[i].id === tabId) {
+                            tabPanes[i].classList.remove('hidden');
+                        } else {
+                            tabPanes[i].classList.add('hidden');
+                        }
+                    }
+                }
+            });
+
+            // Chart.js Plugin for Donut Center Text
+            const doughnutCenterText = {
+                id: 'doughnut-center-text',
+                beforeDraw: function(chart) {
+                    if (chart.options.elements.center) {
+                        const { ctx, chartArea: { top, right, bottom, left, width, height } } = chart;
+                        ctx.save();
+                        const centerConfig = chart.options.elements.center;
+                        const fontStyle = centerConfig.fontStyle || 'Arial';
+                        ctx.font = `24px ${fontStyle}`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = centerConfig.color || '#000';
+                        const text = centerConfig.text;
+                        ctx.fillText(text, width / 2, top + (height / 2));
+                        ctx.restore();
+                    }
+                }
+            };
+            
+            const createKpiChart = (canvasId, dataKey, color) => {
+                const data = projectData[canvasId.replace('KpiChart1', '').replace('KpiChart2', '')][dataKey];
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const targetValue = data.value;
+                
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [data.label, '목표 미달성'],
+                        datasets: [{
+                            data: [targetValue, 100 - targetValue],
+                            backgroundColor: [color, '#e0e0e0'],
+                            borderColor: ['#ffffff', '#ffffff'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}${data.unit}`;
+                                    }
+                                }
+                            }
+                        },
+                        elements: {
+                            center: {
+                                text: `${targetValue}${data.unit}`,
+                                color: color,
+                                fontStyle: 'bold'
+                            }
+                        }
+                    },
+                    plugins: [doughnutCenterText]
+                });
+            };
+
+            const createIntegratedKpiChart = () => {
+                const ctx = document.getElementById('integratedKpiChart').getContext('2d');
+                const data = {
+                    labels: ['수요 예측 정확도 (%)', '물류 운송 비용 절감 (%)', '리스크 예측 정확도 (%)'],
+                    datasets: [
+                        {
+                            label: 'AI 수요 예측',
+                            data: [projectData.demand.kpi1.value, 0, 0], 
+                            backgroundColor: '#005f73',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: '물류 네트워크 최적화',
+                            data: [0, projectData.logistics.kpi1.value, 0],
+                            backgroundColor: '#00adad',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: '공급망 리스크 관리',
+                            data: [0, 0, projectData.risk.kpi1.value],
+                            backgroundColor: '#aec3b0',
+                            stack: 'stack1'
+                        }
+                    ]
+                };
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                min: 0,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '목표 개선/정확도 (%)'
+                                }
+                            },
+                             y: {
+                                stacked: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { size: 14 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.raw + '% 목표';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            // Initialize Charts
+            createIntegratedKpiChart();
+            createKpiChart('demandKpiChart1', 'kpi1', '#005f73'); 
+            createKpiChart('demandKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('logisticsKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('logisticsKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('riskKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('riskKpiChart2', 'kpi2', '#00adad');
+
+            // Initialize Accordions
+            createAccordions('demand');
+            createAccordions('logistics');
+            createAccordions('risk');
+        });
+    </script>
+</body>
+</html>

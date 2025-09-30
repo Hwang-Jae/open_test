@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVH Korea 지능형 생산 공정 AI 혁신 계획</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Muted Teal, Deep Blue) -->
+    <!-- Application Structure Plan: A single-page dashboard utilizing primary tab navigation to separate the three complex initiatives (PdM, Vision, Optimization). This approach ensures that users can quickly focus on one plan at a time, managing information overload. A central, integrated KPI dashboard provides cross-project comparison, while within each tab, collapsible accordions structure the detailed, phased execution steps. This non-linear exploration path is highly effective for managing multi-project complexity. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Integrated project targets (quantitative). -> Goal: Compare/Inform. -> Viz: Comparative Bar Chart. -> Interaction: Tooltips. -> Justification: Allows easy comparison of the relative impact of the three systems. -> Library: Chart.js.
+    - Report Info: Phased tasks/details. -> Goal: Organize/Inform. -> Viz: Accordion-style collapsible sections. -> Interaction: Click to expand/collapse. -> Justification: Efficiently presents dense information step-by-step. -> Method: HTML/JS.
+    - Report Info: Individual project KPIs. -> Goal: Inform/Progress. -> Viz: Donut Charts. -> Interaction: Center text for target value. -> Justification: Quick visual check on key percentage targets (accuracy, reduction rates). -> Library: Chart.js.
+    - CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f7f4;
+            color: #333;
+        }
+        .tab-active {
+            border-color: #005f73;
+            background-color: #e0f2f1;
+            color: #005f73;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .kpi-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 250px;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 500px; /* 충분히 큰 값으로 설정하여 내용이 보이도록 함 */
+        }
+    </style>
+</head>
+<body class="bg-stone-50">
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">NVH Korea 지능형 생산 공정 AI 혁신 계획</h1>
+            <p class="text-lg text-gray-500 mt-2">제조 경쟁력 강화를 위한 3대 AI 핵심 과제 실행 로드맵</p>
+        </header>
+
+        <main>
+            <section id="overview" class="mb-12 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-700 border-b pb-2 mb-4">프로젝트 개요 및 비전</h2>
+                <p class="text-gray-600 leading-relaxed">
+                    본 계획은 NVH Korea의 생산 현장에 AI와 데이터 기술을 통합하여 **예측, 감지, 최적화** 역량을 확보하는 데 중점을 둡니다. 설비 고장을 사전에 예측하고, 제품 품질 검사의 정확성과 속도를 높이며, 복잡한 생산 공정을 실시간으로 최적화하여 궁극적으로 생산 비용을 절감하고 고객 만족도를 극대화하는 것을 목표로 합니다. 아래 대시보드를 통해 각 핵심 과제의 실행 단계와 목표를 탐색할 수 있습니다.
+                </p>
+            </section>
+
+            <section id="integrated-kpi" class="mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold text-gray-700 text-center mb-4">통합 핵심 성과 지표 (KPI) 비교</h2>
+                    <p class="text-center text-gray-500 mb-6">세 가지 AI 시스템 도입을 통해 기대하는 주요 성과 목표를 비교합니다.</p>
+                     <div class="chart-container">
+                        <canvas id="integratedKpiChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <div class="mb-8 border-b border-gray-200">
+                <nav class="flex flex-wrap -mb-px" id="tabs">
+                    <button data-tab="pdm" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg tab-active">
+                        설비 예지보전 (PdM)
+                    </button>
+                    <button data-tab="vision" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        AI 비전 검사
+                    </button>
+                    <button data-tab="optimization" class="tab-button text-lg p-4 border-b-2 font-medium rounded-t-lg">
+                        생산 공정 최적화
+                    </button>
+                </nav>
+            </div>
+
+            <div id="tab-content">
+                <article id="pdm" class="tab-pane active">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">설비 예지보전 (PdM) 시스템 구축</h3>
+                            <p class="text-gray-600 mb-6">
+                                생산 설비의 온도, 진동, 전류 등 센서 데이터를 실시간으로 분석하여 고장 징후를 사전에 감지하고 유지보수 시점을 예측하는 시스템입니다. 이를 통해 예기치 않은 설비 가동 중단을 최소화하고, 계획적인 보전 활동을 가능하게 하여 공정 효율성을 극대화합니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="pdmKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">예상치 못한 다운타임 감소 (시간)</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="pdmKpiChart2"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">고장 예측 정확도</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="vision" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">AI 비전 검사 시스템 도입</h3>
+                            <p class="text-gray-600 mb-6">
+                                고속 카메라와 딥러닝 기반 AI 모델을 활용하여 제품 표면의 미세 결함, 조립 불량 등을 자동 검사합니다. 인간의 육안 검사로는 한계가 있는 빠르고 정밀한 검사를 수행하여 품질 균일성을 확보하고, 검사 인력의 부담을 줄여 생산성을 높이는 것이 핵심입니다.
+                            </p>
+                            <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="visionKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">결함 검출률 (정확도)</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="visionKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">검사 시간 단축률</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article id="optimization" class="tab-pane hidden">
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">생산 공정 최적화 시스템</h3>
+                            <p class="text-gray-600 mb-6">
+                                MES, PLC, 품질 데이터 등을 통합 분석하여 생산 파라미터(온도, 압력, 속도 등) 간의 복잡한 관계를 학습합니다. AI는 이를 바탕으로 생산량, 에너지 효율, 품질 등의 목표에 따라 최적의 설비 운전 조건을 실시간으로 제안하거나 자동 제어하여 생산 효율을 최대화합니다.
+                            </p>
+                             <div class="space-y-4 accordion-container">
+                                <!-- Accordions will be injected by JS -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">핵심 목표 (KPI)</h3>
+                            <div class="kpi-chart-container">
+                                <canvas id="optimizationKpiChart1"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 mt-2 font-medium">생산 수율 (Throughput) 개선율</p>
+                            <div class="kpi-chart-container mt-4">
+                                <canvas id="optimizationKpiChart2"></canvas>
+                            </div>
+                             <p class="text-center text-gray-600 mt-2 font-medium">에너지 소비 절감률</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.getElementById('tabs');
+            const tabPanes = document.getElementById('tab-content').getElementsByClassName('tab-pane');
+
+            const projectData = {
+                pdm: {
+                    kpi1: { label: '예상치 못한 다운타임 감소', value: 60, unit: '%' },
+                    kpi2: { label: '고장 예측 정확도', value: 90, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 데이터 인프라 및 센서 설치 (3개월)', 
+                            content: '<li>주요 생산 설비(프레스, 접착 설비 등)에 진동, 온도, 전류 센서 설치 및 데이터 수집 시스템(IoT Gateway) 구축</li><li>과거 설비 고장 이력, 보전 기록, 가동 데이터 수집 및 정형화</li><li>실시간 데이터 스트리밍 파이프라인 구축 및 시계열 데이터베이스(TSDB) 구성</li>',
+                            resources: '인력: 설비 엔지니어 2명, 데이터 엔지니어 1명<br>기술: 진동/온도 센서, MQTT/Kafka, InfluxDB'
+                        },
+                        { 
+                            title: '2단계: AI 예측 모델 개발 (4개월)', 
+                            content: '<li>시계열 데이터를 활용한 이상 감지(Anomaly Detection) 모델 개발 (Autoencoder, One-Class SVM)</li><li>잔존 수명 예측(RUL)을 위한 딥러닝 모델(LSTM/Transformer) 훈련</li><li>모델 성능 검증 및 F-1 Score, 정밀도 평가</li>',
+                            resources: '인력: AI/ML 엔지니어 3명, 설비 전문가 1명<br>기술: TensorFlow/PyTorch, MLOps 플랫폼, GPU 클러스터'
+                        },
+                        { 
+                            title: '3단계: 파일럿 적용 및 통합 (3개월)', 
+                            content: '<li>고장 빈도가 높은 핵심 설비에 예측 시스템을 파일럿 적용하여 현장 검증</li><li>MES/ERP 시스템과 연동하여 보전 오더(Work Order) 자동 생성 기능 개발</li><li>예측 결과에 따른 설비 알람 및 대시보드 시각화 기능 구현</li>',
+                            resources: '인력: 시스템 통합 전문가 2명, 현장 작업자 3명<br>기술: API 연동, 웹 UI 개발(React/Vue), 태블릿 기반 모니터링 시스템'
+                        },
+                        { 
+                            title: '4단계: 시스템 확대 및 최적화 (2개월)', 
+                            content: '<li>전체 생산 라인으로 PdM 시스템 적용 범위 확대 및 배포</li><li>예측 오류 및 미흡 사항에 대한 피드백 루프를 통해 모델 성능 지속 개선</li><li>보전 활동 이력을 학습하여 보전 주기 및 부품 교체 시점을 최적화하는 기능 추가</li>',
+                            resources: '인력: IT팀, 품질/생산 관리팀<br>기술: 클라우드 기반 인프라, A/B 테스팅 환경'
+                        }
+                    ]
+                },
+                vision: {
+                    kpi1: { label: '결함 검출률', value: 99.5, unit: '%' },
+                    kpi2: { label: '검사 시간 단축률', value: 80, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 이미지 데이터 수집 및 라벨링 (4개월)', 
+                            content: '<li>검사 대상 공정에 고속, 고해상도 산업용 카메라 시스템 설치</li><li>정상 제품 및 다양한 유형의 불량 제품 이미지 데이터 수집 (수만 장 이상 목표)</li><li>수집된 불량 이미지에 대한 전문 작업자의 정확한 결함 위치 라벨링 작업 수행</li>',
+                            resources: '인력: 비전 전문가 1명, 데이터 라벨링 인력 5명<br>기술: 산업용 카메라, 이미지 라벨링 도구(LabelImg 등), 이미지 서버'
+                        },
+                        { 
+                            title: '2단계: AI 비전 모델 개발 (4개월)', 
+                            content: '<li>결함 유형 분류(Classification) 및 위치 탐지/분할(Detection/Segmentation)을 위한 딥러닝 모델 설계 (YOLO, Mask R-CNN 기반)</li><li>학습 데이터셋을 이용한 모델 훈련 및 경량화(Pruning, Quantization) 진행</li><li>모델 성능 평가 (mAP, F-1 Score 기준) 및 임계값 설정</li>',
+                            resources: '인력: 딥러닝 엔지니어 3명, 비전 검사 전문가 1명<br>기술: Darknet/TensorFlow Lite, 고성능 GPU 워크스테이션'
+                        },
+                        { 
+                            title: '3단계: 엣지 디바이스 배포 및 테스트 (3개월)', 
+                            content: '<li>개발된 AI 모델을 검사 장비의 엣지 컴퓨팅 디바이스(Industrial PC)에 배포</li><li>실제 생산 라인에 파일럿 적용하여 실시간 검사 속도 및 정확도 검증</li><li>조명, 제품 위치 변화 등에 강인하도록 카메라 및 캘리브레이션 최적화</li>',
+                            resources: '인력: 펌웨어 엔지니어 1명, 현장 설비 엔지니어 2명<br>기술: NVIDIA Jetson/OpenVINO, PLC 통신 프로토콜(Modbus/EtherNet/IP)'
+                        },
+                        { 
+                            title: '4단계: 통합 관리 시스템 구축 (3개월)', 
+                            content: '<li>검사 결과 데이터(불량 이미지, 유형, 시간)를 품질 관리 시스템(QMS)에 자동 기록</li><li>AI가 검출한 결함 패턴을 분석하여 생산 공정 개선에 활용하는 피드백 루프 구축</li><li>오탐(False Positive) 및 미탐(False Negative) 발생 시 현장 전문가가 쉽게 재학습을 요청할 수 있는 기능 제공</li>',
+                            resources: '인력: 소프트웨어 개발자 2명, 품질 관리팀<br>기술: 데이터 마이닝, 웹 기반 대시보드 시스템'
+                        }
+                    ]
+                },
+                optimization: {
+                    kpi1: { label: '생산 수율 개선율', value: 15, unit: '%' },
+                    kpi2: { label: '에너지 소비 절감률', value: 10, unit: '%' },
+                    phases: [
+                        { 
+                            title: '1단계: 공정 데이터 통합 및 모델링 (4개월)', 
+                            content: '<li>MES, ERP, 설비 PLC로부터 생산 조건, 품질, 원자재 사용량 데이터 통합 수집 및 정합성 확보</li><li>생산 공정의 물리적/화학적 특성을 반영한 디지털 트윈(Digital Twin) 시뮬레이션 환경 구축</li><li>데이터 기반의 공정 변수(Parameter) 민감도 분석 및 핵심 제어 변수 선정</li>',
+                            resources: '인력: 공정 전문가 2명, 데이터 과학자 1명<br>기술: OPC UA/MES 인터페이스, 시뮬레이션 소프트웨어(예: MATLAB/Simulink)'
+                        },
+                        { 
+                            title: '2단계: AI 최적화 알고리즘 개발 (5개월)', 
+                            content: '<li>생산 목표(수율 극대화, 비용 최소화)에 따른 다중 목적 최적화(Multi-objective Optimization) 알고리즘 개발</li><li>강화 학습(Reinforcement Learning) 또는 베이지안 최적화(Bayesian Optimization) 기반의 최적 운전 조건 탐색 에이전트 훈련</li><li>가상 환경(디지털 트윈) 내에서 성능 검증 및 알고리즘 튜닝</li>',
+                            resources: '인력: AI 최적화 전문가 3명, 공정 제어 전문가 1명<br>기술: Python(Scikit-optimize, Ray), RL 환경 구축 라이브러리'
+                        },
+                        { 
+                            title: '3단계: 현장 제어 시스템 연동 및 Pilot (3개월)', 
+                            content: '<li>개발된 AI 에이전트의 최적화 제안을 현장 PLC/DCS 시스템에 전달하는 인터페이스 구축</li><li>특정 생산 라인/제품군에 한정하여 AI 최적화 시스템을 시범 적용 및 효과 검증</li><li>안전성 및 제어 안정성 테스트 수행 및 공정 전문가의 검토 피드백 반영</li>',
+                            resources: '인력: 제어 시스템 엔지니어 2명, 생산 관리팀<br>기술: 실시간 제어 시스템, 안전 프로토콜 및 비상 정지 메커니즘'
+                        },
+                        { 
+                            title: '4단계: 전사 확산 및 자동 운전 (2개월)', 
+                            content: '<li>AI 최적화 시스템을 전사 생산 공정으로 확장하고 표준 운전 절차(SOP)에 반영</li><li>AI의 최적 운전 조건 제안을 인간 개입 없이 자동으로 반영하는 \'자동 운전 모드\' 도입</li><li>지속적인 공정 변화 및 원자재 변화에 적응할 수 있도록 적응형 학습(Adaptive Learning) 기능 구현</li>',
+                            resources: '인력: 생산 기획팀, IT팀<br>기술: 빅데이터 분석 플랫폼, 클라우드 기반 스케일링'
+                        }
+                    ]
+                }
+            };
+            
+            function createAccordions(tabId) {
+                const container = document.querySelector(`#${tabId} .accordion-container`);
+                container.innerHTML = '';
+                const data = projectData[tabId];
+                if (!data) return;
+
+                data.phases.forEach((phase, index) => {
+                    const accordionItem = document.createElement('div');
+                    accordionItem.className = 'border border-gray-200 rounded-lg';
+                    
+                    const button = document.createElement('button');
+                    button.className = 'accordion-button w-full text-left p-4 bg-gray-50 hover:bg-gray-100 font-semibold flex justify-between items-center transition duration-200 text-gray-700';
+                    button.innerHTML = `<span>${phase.title}</span> <span class="transform transition-transform duration-300 icon-arrow">▼</span>`;
+
+                    const content = document.createElement('div');
+                    content.className = 'accordion-content p-4 border-t bg-white';
+                    content.style.maxHeight = '0';
+                    
+                    content.innerHTML = `
+                        <h4 class="font-semibold text-teal-700 mb-2">주요 세부 실행 과제</h4>
+                        <ul class="list-disc list-inside text-gray-600 mb-4 ml-4">${phase.content}</ul>
+                        <h4 class="font-semibold text-teal-700 mb-2">필요 리소스 / 기술 스택</h4>
+                        <p class="text-gray-600">${phase.resources}</p>
+                    `;
+
+                    accordionItem.appendChild(button);
+                    accordionItem.appendChild(content);
+                    container.appendChild(accordionItem);
+
+                    button.addEventListener('click', () => {
+                        const icon = button.querySelector('.icon-arrow');
+                        const isVisible = content.classList.contains('open');
+
+                        if (isVisible) {
+                            content.classList.remove('open');
+                            content.style.maxHeight = '0';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            // Close other open accordions in the same tab
+                            document.querySelectorAll(`#${tabId} .accordion-content.open`).forEach(el => {
+                                el.style.maxHeight = '0';
+                                el.classList.remove('open');
+                                el.previousElementSibling.querySelector('.icon-arrow').style.transform = 'rotate(0deg)';
+                            });
+
+                            content.classList.add('open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                });
+            }
+
+            tabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-button')) {
+                    const tabId = e.target.getAttribute('data-tab');
+
+                    document.querySelectorAll('.tab-button').forEach(button => {
+                        button.classList.remove('tab-active');
+                    });
+                    e.target.classList.add('tab-active');
+                    
+                    for (let i = 0; i < tabPanes.length; i++) {
+                        if (tabPanes[i].id === tabId) {
+                            tabPanes[i].classList.remove('hidden');
+                        } else {
+                            tabPanes[i].classList.add('hidden');
+                        }
+                    }
+                }
+            });
+
+            // Chart.js Plugin for Donut Center Text
+            const doughnutCenterText = {
+                id: 'doughnut-center-text',
+                beforeDraw: function(chart) {
+                    if (chart.options.elements.center) {
+                        const { ctx, chartArea: { top, right, bottom, left, width, height } } = chart;
+                        ctx.save();
+                        const centerConfig = chart.options.elements.center;
+                        const fontStyle = centerConfig.fontStyle || 'Arial';
+                        ctx.font = `24px ${fontStyle}`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = centerConfig.color || '#000';
+                        const text = centerConfig.text;
+                        ctx.fillText(text, width / 2, top + (height / 2));
+                        ctx.restore();
+                    }
+                }
+            };
+            
+            const createKpiChart = (canvasId, dataKey, color) => {
+                const data = projectData[canvasId.replace('KpiChart1', '').replace('KpiChart2', '')][dataKey];
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const targetValue = data.value;
+                
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [data.label, '목표 미달성'],
+                        datasets: [{
+                            data: [targetValue, 100 - targetValue],
+                            backgroundColor: [color, '#e0e0e0'],
+                            borderColor: ['#ffffff', '#ffffff'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}${data.unit}`;
+                                    }
+                                }
+                            }
+                        },
+                        elements: {
+                            center: {
+                                text: `${targetValue}${data.unit}`,
+                                color: color,
+                                fontStyle: 'bold'
+                            }
+                        }
+                    },
+                    plugins: [doughnutCenterText]
+                });
+            };
+
+            const createIntegratedKpiChart = () => {
+                const ctx = document.getElementById('integratedKpiChart').getContext('2d');
+                const data = {
+                    labels: ['다운타임 감소 (%)', '결함 검출률 (%)', '생산 수율 개선 (%)'],
+                    datasets: [
+                        {
+                            label: '설비 예지보전 (PdM)',
+                            data: [projectData.pdm.kpi1.value, 0, 0], 
+                            backgroundColor: '#005f73',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: 'AI 비전 검사',
+                            data: [0, projectData.vision.kpi1.value, 0],
+                            backgroundColor: '#00adad',
+                            stack: 'stack1'
+                        },
+                        {
+                            label: '생산 공정 최적화',
+                            data: [0, 0, projectData.optimization.kpi1.value],
+                            backgroundColor: '#aec3b0',
+                            stack: 'stack1'
+                        }
+                    ]
+                };
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '목표 개선/정확도 (%)'
+                                }
+                            },
+                             y: {
+                                stacked: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { size: 14 }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.raw + '% 목표';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            // Initialize Charts
+            createIntegratedKpiChart();
+            createKpiChart('pdmKpiChart1', 'kpi1', '#005f73'); 
+            createKpiChart('pdmKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('visionKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('visionKpiChart2', 'kpi2', '#00adad');
+            createKpiChart('optimizationKpiChart1', 'kpi1', '#005f73');
+            createKpiChart('optimizationKpiChart2', 'kpi2', '#00adad');
+
+            // Initialize Accordions
+            createAccordions('pdm');
+            createAccordions('vision');
+            createAccordions('optimization');
+        });
+    </script>
+</body>
+</html>
